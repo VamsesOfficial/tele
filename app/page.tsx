@@ -1588,7 +1588,7 @@ export default function Home() {
 
                 {/* BROADCAST CARD */}
                 {botToken.trim() && (
-                  <section id="broadcast_card" className={`${cardClass} p-5 flex flex-col gap-4 shadow-xl transition-all duration-300`}>
+                  <section id="broadcast_card" className={`${cardClass} p-5 flex flex-col gap-4 transition-all duration-300`}>
                     <div className={`flex items-center gap-2.5 pb-2 border-b ${borderClass}`}>
                       <Volume2 className="w-5 h-5 text-blue-500" />
                       <h2 className="font-bold">Broadcast Pengumuman</h2>
@@ -1635,32 +1635,31 @@ export default function Home() {
                 )}
 
                 {/* REAL-TIME CLIENT STATISTICS */}
-                <section id="stats_card" className={`${cardClass} p-5 flex flex-col gap-3.5 shadow-xl transition-all duration-300`}>
-                  <div className={`flex items-center gap-2.5 pb-2 border-b ${borderClass}`}>
-                    <HardDrive className="w-5 h-5 text-blue-500" />
-                    <h2 className="font-bold">Statistik Klien</h2>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className={`p-3 rounded-2xl flex flex-col gap-1 ${innerCardClass}`}>
-                      <span className="text-[10px] text-slate-500 font-bold uppercase">Unduhan Berhasil</span>
-                      <span className="text-xl font-black text-blue-500">{currentUser.downloadsCount || 0}</span>
+                <section id="stats_card" className="flex flex-col transition-all duration-300">
+                  <span className={`ios-eyebrow ${labelClass}`}>Statistik Klien</span>
+                  <div className={`${cardClass} rounded-2xl overflow-hidden`}>
+                    <div className="ios-row">
+                      <span className="text-[13px] font-medium">Unduhan berhasil</span>
+                      <span className="text-[15px] font-semibold text-blue-500">{currentUser.downloadsCount || 0}</span>
                     </div>
-                    <div className={`p-3 rounded-2xl flex flex-col gap-1 ${innerCardClass}`}>
-                      <span className="text-[10px] text-slate-500 font-bold uppercase">Status Integrasi</span>
-                      <span className="text-xs font-extrabold text-blue-500 flex items-center gap-1 mt-1">
+                    <div className="ios-row">
+                      <span className="text-[13px] font-medium">Status integrasi</span>
+                      <span className="text-[13px] font-semibold text-blue-500 flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
                         Aktif
                       </span>
                     </div>
-                  </div>
-                  <div className={`p-3 rounded-2xl text-[11px] flex items-start gap-2.5 leading-relaxed ${innerCardClass}`}>
-                    <HelpCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
-                    <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>Kirim link Instagram Reels atau TikTok ke bot Telegram Anda. Menu format kirim inline akan otomatis muncul di aplikasi chat Anda!</span>
+                    <div className="ios-row items-start">
+                      <div className="flex items-start gap-2.5">
+                        <HelpCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                        <span className={`text-[12px] leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Kirim link Instagram Reels atau TikTok ke bot Telegram Anda. Menu format kirim akan otomatis muncul di chat.</span>
+                      </div>
+                    </div>
                   </div>
                 </section>
 
                 {/* CHATBOT & AUTO-RESPONSE CONFIGURATION */}
-                <section id="chatbot_card" className={`${cardClass} p-5 flex flex-col gap-4 shadow-xl transition-all duration-300`}>
+                <section id="chatbot_card" className={`${cardClass} p-5 flex flex-col gap-4 transition-all duration-300`}>
                   <div className={`flex items-center justify-between pb-2 border-b ${borderClass}`}>
                     <div className="flex items-center gap-2.5">
                       <MessageSquare className="w-5 h-5 text-blue-500" />
@@ -2077,7 +2076,7 @@ export default function Home() {
             } ${activeTab === 'downloader' ? 'block' : 'hidden md:flex'}`}>
               
               {/* INSTANT WEB DOWNLOADER CARD */}
-              <section id="instant_downloader_card" className={`${cardClass} p-5 flex flex-col gap-4 shadow-xl transition-all duration-300`}>
+              <section id="instant_downloader_card" className={`${cardClass} p-5 flex flex-col gap-4 transition-all duration-300`}>
                 <div className={`flex items-center gap-2.5 pb-2 border-b ${borderClass}`}>
                   <Download className="w-5 h-5 text-blue-500" />
                   <h2 className="font-bold">Ekstraktor Web</h2>
@@ -2215,55 +2214,29 @@ export default function Home() {
               </section>
 
               {/* PLATFORMS & FUTURE ADDITIONS CARD */}
-              <section id="platforms_status_card" className={`${cardClass} p-5 flex flex-col gap-3 shadow-xl transition-all duration-300`}>
-                <div className={`flex items-center gap-2.5 pb-2 border-b ${borderClass}`}>
-                  <Layers className="w-5 h-5 text-blue-500" />
-                  <h2 className="font-bold">Layanan Ekstraksi</h2>
-                </div>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Chonix Bot mendukung ekstraksi tanpa watermark untuk seluruh media sosial utama di bawah ini secara instan:
-                </p>
-                <div className="grid grid-cols-2 gap-2 mt-1">
-                  <div className={`p-2 rounded-2xl flex items-center justify-between text-[11px] font-semibold ${innerCardClass}`}>
-                    <span className="flex items-center gap-1.5 text-blue-500">
-                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
-                      TikTok
-                    </span>
-                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-500 font-extrabold">Aktif</span>
-                  </div>
-                  <div className={`p-2 rounded-2xl flex items-center justify-between text-[11px] font-semibold ${innerCardClass}`}>
-                    <span className="flex items-center gap-1.5 text-pink-500">
-                      <span className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse"></span>
-                      Instagram
-                    </span>
-                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-500 font-extrabold">Aktif</span>
-                  </div>
-                  <div className={`p-2 rounded-2xl flex items-center justify-between text-[11px] font-semibold ${innerCardClass}`}>
-                    <span className="flex items-center gap-1.5 text-red-500">
-                      <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
-                      YouTube
-                    </span>
-                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-500 font-extrabold">Aktif</span>
-                  </div>
-                  <div className={`p-2 rounded-2xl flex items-center justify-between text-[11px] font-semibold ${innerCardClass}`}>
-                    <span className="flex items-center gap-1.5 text-indigo-400">
-                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
-                      Twitter / X
-                    </span>
-                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-500 font-extrabold">Aktif</span>
-                  </div>
-                  <div className={`p-2 rounded-2xl flex items-center justify-between text-[11px] font-semibold ${innerCardClass} col-span-2`}>
-                    <span className="flex items-center gap-1.5 text-indigo-400">
-                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
-                      Facebook Video & Reels
-                    </span>
-                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-500 font-extrabold">Aktif</span>
-                  </div>
+              <section id="platforms_status_card" className="flex flex-col transition-all duration-300">
+                <span className={`ios-eyebrow ${labelClass}`}>Layanan Ekstraksi</span>
+                <div className={`${cardClass} rounded-2xl overflow-hidden`}>
+                  {[
+                    { name: 'TikTok', dot: 'bg-blue-500' },
+                    { name: 'Instagram', dot: 'bg-pink-500' },
+                    { name: 'YouTube', dot: 'bg-red-500' },
+                    { name: 'Twitter / X', dot: 'bg-indigo-400' },
+                    { name: 'Facebook Video & Reels', dot: 'bg-indigo-500' },
+                  ].map((p) => (
+                    <div key={p.name} className="ios-row">
+                      <span className="flex items-center gap-2 text-[13px] font-medium">
+                        <span className={`w-1.5 h-1.5 rounded-full ${p.dot} animate-pulse`}></span>
+                        {p.name}
+                      </span>
+                      <span className="text-[11px] font-semibold text-blue-500">Aktif</span>
+                    </div>
+                  ))}
                 </div>
               </section>
 
               {/* BREAKING NEWS / BERITA TERKINI CARD */}
-              <section id="breaking_news_card" className={`${cardClass} p-5 flex flex-col gap-3.5 shadow-xl transition-all duration-300`}>
+              <section id="breaking_news_card" className={`${cardClass} p-5 flex flex-col gap-3.5 transition-all duration-300`}>
                 <div className={`flex items-center justify-between pb-2 border-b ${borderClass}`}>
                   <div className="flex items-center gap-2.5">
                     <Newspaper className="w-5 h-5 text-blue-500" />
@@ -2334,7 +2307,7 @@ export default function Home() {
               </section>
 
               {/* EVENT LOG CONSOLE CARD */}
-              <section id="logs_card" className={`${cardClass} p-5 flex flex-col gap-3 shadow-xl transition-all duration-300`}>
+              <section id="logs_card" className={`${cardClass} p-5 flex flex-col gap-3 transition-all duration-300`}>
                 <div className={`flex items-center gap-2.5 pb-2 border-b ${borderClass}`}>
                   <FileText className="w-5 h-5 text-blue-500" />
                   <h2 className="font-bold">Log Konsol Aktivitas</h2>

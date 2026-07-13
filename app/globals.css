@@ -37,10 +37,11 @@ button, a {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Prevent the decorative glow blobs (and any stray wide element) from
-   forcing a horizontal scrollbar on narrow viewports. */
-html, body, #main_container {
-  overflow-x: hidden;
+/* Prevent the decorative glow blobs from forcing a horizontal scrollbar —
+   scoped to the app root only. (Setting this on html/body breaks vertical
+   scrolling on iOS Safari, so it must NOT go there.) */
+#main_container {
+  overflow-x: clip;
 }
 
 /* Safe-area helpers for iPhone notch / Dynamic Island / home indicator */
@@ -63,4 +64,27 @@ button:focus-visible, a:focus-visible, input:focus-visible {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+/* ---- iOS "grouped list" primitives ----
+   Replaces the old pattern of small bordered boxes nested inside bigger
+   bordered boxes. One flat group, rows separated by a hairline divider —
+   this is how Settings.app / Mail.app lay out data on iOS. */
+.ios-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 0 4px 6px;
+  opacity: 0.55;
+}
+.ios-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 14px;
+}
+.ios-row + .ios-row {
+  border-top: 1px solid rgba(120, 120, 128, 0.18);
 }
