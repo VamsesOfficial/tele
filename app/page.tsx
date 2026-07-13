@@ -1146,15 +1146,15 @@ export default function Home() {
 
   // Theme-adaptive classes
   const cardClass = isDark 
-    ? "bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 text-slate-100" 
+    ? "bg-[#1C1C1E]/80 backdrop-blur-xl border border-white/10 text-slate-100" 
     : "bg-white border border-slate-200/80 text-slate-800 shadow-sm";
     
   const innerCardClass = isDark 
-    ? "bg-slate-950/50 border border-slate-900/50 text-slate-300" 
+    ? "bg-black/40 border border-white/5 text-slate-300" 
     : "bg-slate-50 border border-slate-100 text-slate-600";
     
   const borderClass = isDark 
-    ? "border-slate-800/80" 
+    ? "border-white/10" 
     : "border-slate-100";
     
   const labelClass = isDark 
@@ -1162,58 +1162,74 @@ export default function Home() {
     : "text-slate-500";
     
   const inputClass = isDark 
-    ? "bg-slate-950/80 border border-slate-800 focus:border-blue-500 text-slate-100 focus:ring-1 focus:ring-blue-500" 
+    ? "bg-black/50 border border-white/10 focus:border-blue-500 text-slate-100 focus:ring-1 focus:ring-blue-500" 
     : "bg-slate-50 border border-slate-200 focus:border-blue-500 text-slate-800 focus:ring-1 focus:ring-blue-500";
 
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center font-sans">
+      <div className="min-h-[100dvh] bg-black text-slate-100 flex items-center justify-center font-sans">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-xs text-slate-400 font-medium animate-pulse">Memuat aplikasi...</p>
+          <div className="w-8 h-8 border-[3px] border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-[13px] text-slate-400 font-medium animate-pulse">Memuat aplikasi…</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div id="main_container" className={`min-h-screen flex flex-col font-sans selection:bg-blue-500 selection:text-white transition-colors duration-300 ${
-      isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
+    <div id="main_container" className={`relative min-h-screen flex flex-col font-sans selection:bg-blue-500 selection:text-white transition-colors duration-300 ${
+      isDark ? 'bg-black text-slate-100' : 'bg-slate-50 text-slate-900'
     }`}>
       
-      {/* GLOW DECORATIONS */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+      {/* GLOW DECORATIONS — clipped so they never push the page wider than the viewport */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+        <div className="absolute -top-10 left-1/4 w-72 h-72 sm:w-96 sm:h-96 bg-blue-600/10 rounded-full blur-[100px]"></div>
+        <div className="absolute bottom-10 right-1/4 w-72 h-72 sm:w-96 sm:h-96 bg-blue-600/10 rounded-full blur-[100px]"></div>
+      </div>
 
-      {/* HEADER SECTION — iOS translucent navigation bar */}
-      <header id="app_header" className={`border-b backdrop-blur-xl sticky top-0 z-40 px-4 py-3 transition-colors duration-300 ${
-        isDark ? 'border-slate-800/60 bg-slate-900/60 text-slate-100' : 'border-slate-200/70 bg-white/70 text-slate-900'
+      {/* HEADER SECTION — iOS translucent navigation bar, pt-safe clears the Dynamic Island / notch */}
+      <header id="app_header" className={`border-b backdrop-blur-xl sticky top-0 z-40 px-4 pt-safe py-3 transition-colors duration-300 ${
+        isDark ? 'border-white/10 bg-black/70 text-slate-100' : 'border-slate-200/70 bg-white/70 text-slate-900'
       }`}>
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="rounded-[20px] shadow-lg shadow-indigo-500/10">
-              <ChonixBotLogo className="w-10 h-10" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-blue-400 via-indigo-300 to-violet-300 bg-clip-text text-transparent">
-                  Chonix Bot
-                </h1>
-                <span className="bg-gradient-to-r from-blue-500 to-violet-500 text-[10px] font-black px-2 py-0.5 rounded-full uppercase shadow text-white">v2.0</span>
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
+            <div className="flex items-center gap-3">
+              <ChonixBotLogo className="w-9 h-9" />
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <h1 className="text-[17px] font-semibold tracking-tight">
+                    Chonix Bot
+                  </h1>
+                  <span className={`text-[11px] font-semibold px-1.5 py-0.5 rounded-md ${isDark ? 'bg-blue-500/15 text-blue-400' : 'bg-blue-500/10 text-blue-600'}`}>v2.0</span>
+                </div>
+                <p className={`text-[12px] font-medium hidden sm:block ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                  Manajer bot Telegram & pengunduh media tanpa watermark
+                </p>
               </div>
-              <p className={`text-xs font-medium hidden sm:block ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                Telegram Multi-Client Bot Manager with TikTok & Instagram watermark-free extractors
-              </p>
             </div>
+
+            {/* Theme toggle stays reachable next to the wordmark on mobile */}
+            <button
+              id="theme_toggle_btn_mobile"
+              onClick={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')}
+              className={`md:hidden p-2 rounded-full border transition-all duration-300 cursor-pointer flex-shrink-0 ${
+                isDark
+                  ? 'bg-white/5 border-white/10 text-amber-400'
+                  : 'bg-white border-slate-200 text-slate-600 shadow-sm'
+              }`}
+              aria-label="Toggle Theme"
+            >
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
           </div>
           
           {/* Main Controls Header */}
-          <div className="flex items-center gap-3 w-full md:w-auto justify-center md:justify-end">
+          <div className="hidden md:flex items-center gap-3 w-full md:w-auto justify-center md:justify-end">
             {currentUser && (
-              <div className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full border transition-colors duration-300 ${
-                isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-slate-100 border-slate-200'
+              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-colors duration-300 ${
+                isDark ? 'bg-white/5 border-white/10' : 'bg-slate-100 border-slate-200'
               }`}>
-                <User className="w-3.5 h-3.5 text-indigo-400" />
+                <User className="w-3.5 h-3.5 text-blue-400" />
                 <span className={`text-xs font-bold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{currentUser.username}</span>
                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-ping"></span>
               </div>
@@ -1225,7 +1241,7 @@ export default function Home() {
               onClick={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')}
               className={`p-2 rounded-full border transition-all duration-300 cursor-pointer flex-shrink-0 ${
                 isDark 
-                  ? 'bg-slate-900/80 border-slate-800 text-amber-400 hover:text-amber-300 hover:bg-slate-800' 
+                  ? 'bg-white/5 border-white/10 text-amber-400 hover:text-amber-300 hover:bg-white/10' 
                   : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 shadow-sm'
               }`}
               title={isDark ? "Ganti ke Tema Terang" : "Ganti ke Tema Gelap"}
@@ -1234,10 +1250,10 @@ export default function Home() {
               {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
 
-            {/* Navigation Tabs - iOS segmented control - Only show when logged in */}
+            {/* Navigation Tabs - iOS segmented control - desktop only, mobile uses the bottom tab bar */}
             {currentUser && (
               <div className={`flex p-1 rounded-full border transition-colors duration-300 w-full md:w-auto ${
-                isDark ? 'bg-slate-800/60 border-slate-800/60' : 'bg-slate-200/70 border-slate-200/70'
+                isDark ? 'bg-white/5 border-white/10' : 'bg-slate-200/70 border-slate-200/70'
               }`}>
                 <button
                   onClick={() => setActiveTab('manager')}
@@ -1406,14 +1422,14 @@ export default function Home() {
             animate={{ opacity: 1 }}
             className={`flex-1 max-w-7xl w-full mx-auto p-4 transition-colors duration-300 ${
               currentUser 
-                ? "grid grid-cols-1 lg:grid-cols-12 gap-6" 
-                : "flex flex-col gap-6 items-center w-full"
+                ? "grid grid-cols-1 md:grid-cols-12 gap-6 pb-24 md:pb-4" 
+                : "flex flex-col gap-6 items-center w-full pb-24 md:pb-4"
             }`}
           >
             
             {/* COLUMN 1: BOT CONFIGURATION (Left Column - ONLY rendered if user logged in) */}
             {currentUser && (
-              <div className={`lg:col-span-4 flex flex-col gap-6 w-full ${activeTab === 'manager' ? 'block' : 'hidden lg:flex'}`}>
+              <div className={`md:col-span-4 flex flex-col gap-6 w-full ${activeTab === 'manager' ? 'block' : 'hidden md:flex'}`}>
                 
                 {/* BOT CONFIG CARD */}
                 <section id="bot_connector_card" className={`${cardClass} p-5 flex flex-col gap-4 transition-all duration-300`}>
@@ -1807,11 +1823,11 @@ export default function Home() {
             )}
             
             {/* COLUMN 2: SIMULATOR (Middle Column - Instant Access) */}
-            <div className={`flex flex-col gap-4 h-[calc(100vh-140px)] min-h-[550px] transition-all duration-300 ${
+            <div className={`flex flex-col gap-4 h-[calc(100dvh-224px)] md:h-[calc(100dvh-140px)] min-h-[420px] md:min-h-[550px] transition-all duration-300 ${
               currentUser 
-                ? "lg:col-span-5 w-full" 
+                ? "md:col-span-5 w-full" 
                 : "max-w-2xl w-full"
-            } ${activeTab === 'simulator' ? 'block' : 'hidden lg:flex'}`}>
+            } ${activeTab === 'simulator' ? 'block' : 'hidden md:flex'}`}>
               <div className={`${cardClass} flex flex-col h-full shadow-2xl overflow-hidden rounded-2xl`}>
                 
                 {/* Telegram Header Mockup */}
@@ -2056,9 +2072,9 @@ export default function Home() {
             {/* COLUMN 3: WEB EXTRACTOR & LOG CONSOLE (Right Column - Instant Access) */}
             <div className={`flex flex-col gap-6 transition-all duration-300 ${
               currentUser 
-                ? "lg:col-span-3 w-full" 
+                ? "md:col-span-3 w-full" 
                 : "max-w-2xl w-full"
-            } ${activeTab === 'downloader' ? 'block' : 'hidden lg:flex'}`}>
+            } ${activeTab === 'downloader' ? 'block' : 'hidden md:flex'}`}>
               
               {/* INSTANT WEB DOWNLOADER CARD */}
               <section id="instant_downloader_card" className={`${cardClass} p-5 flex flex-col gap-4 shadow-xl transition-all duration-300`}>
@@ -2351,10 +2367,10 @@ export default function Home() {
       </AnimatePresence>
 
       {/* FOOTER */}
-      <footer id="app_footer" className={`border-t py-4 px-4 mt-auto transition-colors duration-300 ${
-        isDark ? 'bg-slate-950 border-slate-900 text-slate-500' : 'bg-slate-100 border-slate-200 text-slate-500'
+      <footer id="app_footer" className={`border-t py-4 px-4 pb-24 md:pb-4 mt-auto transition-colors duration-300 ${
+        isDark ? 'bg-black border-white/10 text-slate-500' : 'bg-slate-100 border-slate-200 text-slate-500'
       }`}>
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-[10.5px]">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px]">
           <span className="font-medium">Chonix Bot Dashboard © 2026. Semua Hak Dilindungi.</span>
           <div className="flex gap-4">
             <span className="flex items-center gap-1">
@@ -2366,8 +2382,48 @@ export default function Home() {
         </div>
       </footer>
 
+      {/* iOS-style bottom tab bar — primary navigation on mobile/tablet, mirrors the top segmented control on desktop */}
+      {currentUser && (
+        <nav
+          className={`md:hidden fixed bottom-0 inset-x-0 z-40 pb-safe border-t backdrop-blur-xl transition-colors duration-300 ${
+            isDark ? 'bg-black/80 border-white/10' : 'bg-white/80 border-slate-200/80'
+          }`}
+        >
+          <div className="grid grid-cols-3">
+            {([
+              { key: 'manager', label: 'Manager', Icon: Settings },
+              { key: 'simulator', label: 'Simulator', Icon: Send },
+              { key: 'downloader', label: 'Extractor', Icon: Download },
+            ] as const).map(({ key, label, Icon }) => {
+              const active = activeTab === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => setActiveTab(key)}
+                  className="flex flex-col items-center justify-center gap-1 py-2.5 cursor-pointer"
+                  aria-label={label}
+                  aria-current={active ? 'page' : undefined}
+                >
+                  <Icon
+                    className="w-[22px] h-[22px]"
+                    strokeWidth={active ? 2.4 : 1.8}
+                    color={active ? 'var(--ios-blue)' : (isDark ? '#8E8E93' : '#8A8A8E')}
+                  />
+                  <span
+                    className="text-[10px] font-medium"
+                    style={{ color: active ? 'var(--ios-blue)' : (isDark ? '#8E8E93' : '#8A8A8E') }}
+                  >
+                    {label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+      )}
+
       {/* FLOATING ANIMATED TOAST NOTIFICATIONS */}
-      <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-[90%] sm:w-full pointer-events-none">
+      <div className="fixed bottom-5 md:bottom-5 right-0 md:right-5 z-50 flex flex-col gap-2 max-w-sm w-[90%] sm:w-full pointer-events-none px-4 md:px-0" style={{ bottom: 'max(1.25rem, calc(env(safe-area-inset-bottom) + 4.5rem))' }}>
         <AnimatePresence>
           {notifications.map((notif) => (
             <motion.div

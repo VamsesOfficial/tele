@@ -36,3 +36,31 @@ html, body {
 button, a {
   -webkit-tap-highlight-color: transparent;
 }
+
+/* Prevent the decorative glow blobs (and any stray wide element) from
+   forcing a horizontal scrollbar on narrow viewports. */
+html, body, #main_container {
+  overflow-x: hidden;
+}
+
+/* Safe-area helpers for iPhone notch / Dynamic Island / home indicator */
+.pb-safe {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+.pt-safe {
+  padding-top: max(0px, env(safe-area-inset-top));
+}
+
+/* Visible keyboard focus ring, kept subtle to match the iOS aesthetic */
+button:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 2px solid var(--ios-blue);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
