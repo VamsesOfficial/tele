@@ -1,0 +1,6 @@
+{
+  "name": "DifaBot - Telegram Downloader",
+  "description": "Sistem Manajemen Bot Telegram Multi-Klien & Web Downloader untuk mengunduh media dari TikTok dan Instagram tanpa watermark.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

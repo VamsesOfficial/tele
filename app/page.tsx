@@ -1,0 +1,2409 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react-hooks/exhaustive-deps */
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  Bot, 
+  Send, 
+  Settings, 
+  Key, 
+  Globe, 
+  RefreshCw, 
+  FileText, 
+  CheckCircle2, 
+  XCircle, 
+  Download, 
+  Music, 
+  Image as ImageIcon, 
+  Video, 
+  AlertTriangle, 
+  ExternalLink, 
+  HelpCircle,
+  Copy,
+  Check,
+  User,
+  Lock,
+  UserPlus,
+  LogIn,
+  LogOut,
+  Sparkles,
+  Layers,
+  HardDrive,
+  Sun,
+  Moon,
+  Laptop,
+  Plus,
+  Trash2,
+  Newspaper,
+  Sliders,
+  X,
+  MessageSquare,
+  Volume2
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+
+// DifaBot Vector SVG Logo Component matching user upload
+function DifaBotLogo({ className = "w-10 h-10" }: { className?: string }) {
+  return (
+    <svg 
+      viewBox="0 0 100 100" 
+      className={className} 
+      fill="none" 
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* Background soft glowing circle gradient */}
+      <circle cx="50" cy="50" r="46" fill="url(#difaGreenGrad)" />
+      
+      {/* Speech bubble tail tail (matching bottom tail) */}
+      <path d="M42 85 Q50 94 58 85 Z" fill="#10b981" />
+      
+      {/* White Robot Head */}
+      <rect x="25" y="28" width="50" height="42" rx="21" fill="white" />
+      
+      {/* Side headphone-style ear pads */}
+      <rect x="20" y="40" width="6" height="18" rx="3" fill="white" />
+      <rect x="74" y="40" width="6" height="18" rx="3" fill="white" />
+      
+      {/* Antenna with tiny circle on top */}
+      <rect x="48" y="15" width="4" height="14" fill="white" />
+      <circle cx="50" cy="13" r="5" fill="white" />
+      
+      {/* Dark inner eye screen */}
+      <rect x="32" y="38" width="36" height="22" rx="11" fill="#043c2c" />
+      
+      {/* Friendly smiling curved green eyes */}
+      <path d="M38 48 Q41 44 44 48" stroke="#34d399" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      <path d="M56 48 Q59 44 62 48" stroke="#34d399" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      
+      {/* Cheerful curved green mouth */}
+      <path d="M46 53 Q50 56 54 53" stroke="#34d399" strokeWidth="2" strokeLinecap="round" fill="none" />
+      
+      <defs>
+        <linearGradient id="difaGreenGrad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#22c55e" />
+          <stop stopColor="#10b981" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+}
+
+// Types
+interface UserSession {
+  username: string;
+  botToken: string;
+  webhookEnabled: boolean;
+  defaultFormat: 'media' | 'file' | 'audio';
+  downloadsCount: number;
+  chatbotEnabled?: boolean;
+  chatbotType?: 'ai' | 'custom' | 'hybrid';
+  chatbotPrompt?: string;
+  customAutoReplies?: Array<{ keyword: string; reply: string }>;
+}
+
+interface ChatMessage {
+  id: string;
+  sender: 'user' | 'bot';
+  text: string;
+  timestamp: string;
+  isLoading?: boolean;
+  isOptionsPanel?: boolean;
+  urlHash?: string;
+  media?: {
+    success: boolean;
+    source: 'tiktok' | 'instagram' | 'other';
+    title?: string;
+    thumbnail?: string;
+    author?: string;
+    videoUrl?: string;
+    audioUrl?: string;
+    images?: string[];
+    isSlideshow?: boolean;
+    error?: string;
+  };
+}
+
+interface LogEntry {
+  id: string;
+  time: string;
+  type: 'info' | 'success' | 'error' | 'warning';
+  message: string;
+}
+
+export default function Home() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMounted(true);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Auth States initialized from localStorage directly to avoid state setting inside useEffect
+  const [currentUser, setCurrentUser] = useState<UserSession | null>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('user_session');
+      if (saved) {
+        try { return JSON.parse(saved); } catch { return null; }
+      }
+    }
+    return null;
+  });
+
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const [authUsername, setAuthUsername] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
+  const [authError, setAuthError] = useState('');
+  const [authSuccess, setAuthSuccess] = useState('');
+
+  // Floating Animated Toast Notification State
+  const [notifications, setNotifications] = useState<Array<{
+    id: string;
+    type: 'info' | 'success' | 'error' | 'warning';
+    message: string;
+  }>>([]);
+
+  // Config States
+  const [botToken, setBotToken] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('user_session');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          return parsed.botToken || '';
+        } catch { return ''; }
+      }
+    }
+    return '';
+  });
+
+  const [telegramOwnerId, setTelegramOwnerId] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('user_session');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          return parsed.telegramOwnerId || '';
+        } catch { return ''; }
+      }
+    }
+    return '';
+  });
+
+  const [broadcastMessage, setBroadcastMessage] = useState<string>('');
+  const [isBroadcasting, setIsBroadcasting] = useState<boolean>(false);
+
+  const [defaultFormat, setDefaultFormat] = useState<'media' | 'file' | 'audio'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('user_session');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          return parsed.defaultFormat || 'media';
+        } catch { return 'media'; }
+      }
+    }
+    return 'media';
+  });
+  const [isBotSaving, setIsBotSaving] = useState(false);
+  const [botInfo, setBotInfo] = useState<any>(null);
+  const [webhookInfo, setWebhookInfo] = useState<any>(null);
+  const [isBotChecking, setIsBotChecking] = useState(false);
+  const [copiedUrl, setCopiedUrl] = useState(false);
+  const [botStatusLogs, setBotStatusLogs] = useState<LogEntry[]>([]);
+
+  // Chatbot & Auto-Response states
+  const [chatbotEnabled, setChatbotEnabled] = useState<boolean>(true);
+  const [chatbotType, setChatbotType] = useState<'ai' | 'custom' | 'hybrid'>('ai');
+  const [chatbotPrompt, setChatbotPrompt] = useState<string>('');
+  const [customAutoReplies, setCustomAutoReplies] = useState<Array<{ keyword: string; reply: string }>>([]);
+  const [newKeyword, setNewKeyword] = useState('');
+  const [newReply, setNewReply] = useState('');
+  const [isChatbotSaving, setIsChatbotSaving] = useState(false);
+
+  // Breaking News States
+  const [newsList, setNewsList] = useState<any[]>([]);
+  const [newsLoading, setNewsLoading] = useState(false);
+  const [newsError, setNewsError] = useState('');
+
+  // Sync chatbot states when currentUser changes
+  useEffect(() => {
+    if (currentUser) {
+      const timer = setTimeout(() => {
+        setChatbotEnabled(currentUser.chatbotEnabled !== false);
+        setChatbotType(currentUser.chatbotType || 'ai');
+        setChatbotPrompt(currentUser.chatbotPrompt || '');
+        setCustomAutoReplies(currentUser.customAutoReplies || []);
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [currentUser]);
+
+  // Fetch breaking news on mount
+  const fetchNews = async () => {
+    setNewsLoading(true);
+    setNewsError('');
+    try {
+      const res = await fetch('/api/news');
+      const data = await res.json();
+      if (data.success && data.news) {
+        setNewsList(data.news);
+      } else {
+        setNewsError('Gagal memuat berita terkini.');
+      }
+    } catch {
+      setNewsError('Kesalahan jaringan saat memuat berita.');
+    } finally {
+      setNewsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchNews();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Derived app URL to avoid synchronous setState inside useEffect
+  const appUrl = typeof window !== 'undefined' ? window.location.origin : '';
+
+  // Web Downloader States
+  const [downloadInput, setDownloadInput] = useState('');
+  const [downloadLoading, setDownloadLoading] = useState(false);
+  const [downloadResult, setDownloadResult] = useState<any>(null);
+  const [downloadError, setDownloadError] = useState('');
+  const [selectedWebFormat, setSelectedWebFormat] = useState<'media' | 'file' | 'audio'>('media');
+
+  // Dark / Light Mode Theme State
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'light' || saved === 'dark') return saved;
+    }
+    return 'dark'; // Default is dark theme
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('theme', theme);
+    }
+  }, [theme]);
+
+  // Telegram Simulator States
+  const [simMessages, setSimMessages] = useState<ChatMessage[]>(() => [
+    {
+      id: 'start-1',
+      sender: 'bot',
+      text: '👋 *Halo! Selamat datang di Simulator Telegram!*\n\nSaya adalah bot otomatis *DifaBot* bertenaga AI Gemini.\n\nKirimkan saya tautan media dari *TikTok*, *Instagram*, *YouTube*, *Twitter/X*, atau *Facebook*. Saya akan mengunduhnya untuk Anda tanpa watermark!\n\n💡 _Ketik \`/menu\` atau \`/help\` untuk melihat daftar lengkap perintah yang saya dukung!_',
+      timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+    }
+  ]);
+  const [simInput, setSimInput] = useState('');
+  const [isBotTyping, setIsBotTyping] = useState(false);
+  
+  // App navigation tab - default to 'downloader' (Web Extractor) so guests can access instantly
+  const [activeTab, setActiveTab] = useState<'manager' | 'simulator' | 'downloader'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('user_session');
+      if (saved) return 'manager';
+    }
+    return 'downloader';
+  });
+
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  const getFormattedTime = () => {
+    return new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const addLog = (type: LogEntry['type'], message: string) => {
+    const id = Math.random().toString(36).substring(7);
+    const newLog: LogEntry = {
+      id,
+      time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+      type,
+      message,
+    };
+    setBotStatusLogs(prev => [newLog, ...prev.slice(0, 40)]);
+
+    // Skip silent/initial messages to avoid spamming the user on page load
+    const isSilenced = message.includes('Selamat datang kembali') || message.includes('Silakan masuk atau mendaftar') || message.includes('aktif: @');
+    if (!isSilenced) {
+      setNotifications(prev => {
+        const updated = [...prev, { id, type, message }];
+        if (updated.length > 4) {
+          return updated.slice(updated.length - 4);
+        }
+        return updated;
+      });
+
+      setTimeout(() => {
+        setNotifications(prev => prev.filter(n => n.id !== id));
+      }, 4500);
+    }
+  };
+
+  const checkBotStatus = async (tokenToCheck: string) => {
+    if (!tokenToCheck) return;
+    setIsBotChecking(true);
+    try {
+      const meRes = await fetch(`https://api.telegram.org/bot${tokenToCheck}/getMe`);
+      let meJson: any;
+      try {
+        meJson = await meRes.json();
+      } catch {
+        throw new Error('Respons dari Telegram API tidak valid (bukan JSON).');
+      }
+
+      if (meJson.ok) {
+        setBotInfo(meJson.result);
+        addLog('success', `Bot telegram aktif: @${meJson.result.username}`);
+
+        const whRes = await fetch(`https://api.telegram.org/bot${tokenToCheck}/getWebhookInfo`);
+        let whJson: any;
+        try {
+          whJson = await whRes.json();
+        } catch {
+          whJson = { ok: false };
+        }
+        if (whJson.ok) {
+          setWebhookInfo(whJson.result);
+        }
+      } else {
+        setBotInfo(null);
+        setWebhookInfo(null);
+        addLog('error', `Token bot salah atau kedaluwarsa: ${meJson.description}`);
+      }
+    } catch (err: any) {
+      addLog('error', `Koneksi API Telegram gagal: ${err.message}`);
+    } finally {
+      setIsBotChecking(false);
+    }
+  };
+
+  // Initialize
+  useEffect(() => {
+    // Log greeting and trigger bot check if user already logged in via initializer
+    const savedSession = localStorage.getItem('user_session');
+    if (savedSession) {
+      try {
+        const parsed = JSON.parse(savedSession);
+        setTimeout(() => {
+          addLog('info', `Selamat datang kembali, ${parsed.username}!`);
+          if (parsed.botToken) {
+            checkBotStatus(parsed.botToken);
+          }
+        }, 0);
+      } catch {
+        localStorage.removeItem('user_session');
+      }
+    } else {
+      setTimeout(() => {
+        addLog('info', 'Silakan masuk atau mendaftar untuk mengonfigurasi bot pribadi Anda.');
+      }, 0);
+    }
+  }, []);
+
+  // Sync scroll on chat change
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [simMessages, isBotTyping]);
+
+  // ---------------------------------------------------------------------------
+  // AUTHENTICATION LOGIC (Login & Register)
+  // ---------------------------------------------------------------------------
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!authUsername.trim() || !authPassword.trim()) return;
+
+    setAuthLoading(true);
+    setAuthError('');
+    setAuthSuccess('');
+
+    const endpoint = authMode === 'login' ? '/api/auth/login' : '/api/auth/register';
+    addLog('info', `Mencoba ${authMode === 'login' ? 'masuk' : 'mendaftar'} sebagai ${authUsername}...`);
+
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: authUsername.trim(), password: authPassword.trim() }),
+      });
+
+      let data: any;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error('Gagal memproses data server. Respons server bukan format JSON.');
+      }
+
+      if (data.success) {
+        if (authMode === 'login') {
+          setCurrentUser(data.user);
+          setBotToken(data.user.botToken || '');
+          setTelegramOwnerId(data.user.telegramOwnerId || '');
+          setDefaultFormat(data.user.defaultFormat || 'media');
+          localStorage.setItem('user_session', JSON.stringify(data.user));
+          addLog('success', `Berhasil masuk! Selamat datang ${data.user.username}.`);
+          if (data.user.botToken) {
+            checkBotStatus(data.user.botToken);
+          }
+        } else {
+          setAuthSuccess('Pendaftaran berhasil! Silakan masuk dengan akun baru Anda.');
+          setAuthMode('login');
+          addLog('success', `Akun baru "${authUsername}" berhasil didaftarkan ke JSONBin database.`);
+        }
+        setAuthPassword('');
+      } else {
+        setAuthError(data.error || 'Terjadi kesalahan sistem.');
+        addLog('error', `Gagal autentikasi: ${data.error}`);
+      }
+    } catch (err: any) {
+      setAuthError('Gagal menghubungi server.');
+      addLog('error', `Kesalahan koneksi auth: ${err.message}`);
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user_session');
+    setCurrentUser(null);
+    setBotToken('');
+    setBotInfo(null);
+    setWebhookInfo(null);
+    addLog('warning', 'Sesi login telah diakhiri.');
+  };
+
+  // ---------------------------------------------------------------------------
+  // CHATBOT & AUTO-RESPONSE ACTIONS
+  // ---------------------------------------------------------------------------
+  const [chatbotStatusMsg, setChatbotStatusMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+
+  const saveChatbotSettings = async () => {
+    if (!currentUser) return;
+    setIsChatbotSaving(true);
+    setChatbotStatusMsg(null);
+    addLog('info', 'Menyimpan konfigurasi chatbot dan balasan otomatis...');
+
+    try {
+      const res = await fetch('/api/auth/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: currentUser.username,
+          chatbotEnabled,
+          chatbotType,
+          chatbotPrompt: chatbotPrompt.trim(),
+          customAutoReplies,
+        }),
+      });
+
+      let data: any;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error('Gagal memproses data server.');
+      }
+
+      if (data.success) {
+        const updatedSession = {
+          ...currentUser,
+          chatbotEnabled,
+          chatbotType,
+          chatbotPrompt: chatbotPrompt.trim(),
+          customAutoReplies,
+        };
+        setCurrentUser(updatedSession);
+        localStorage.setItem('user_session', JSON.stringify(updatedSession));
+        setChatbotStatusMsg({ text: 'Pengaturan chatbot berhasil disimpan!', type: 'success' });
+        addLog('success', 'Konfigurasi chatbot & balasan otomatis berhasil disimpan ke cloud!');
+        setTimeout(() => setChatbotStatusMsg(null), 4000);
+      } else {
+        setChatbotStatusMsg({ text: data.error || 'Gagal menyimpan konfigurasi.', type: 'error' });
+        addLog('error', `Gagal menyimpan chatbot: ${data.error}`);
+      }
+    } catch (err: any) {
+      setChatbotStatusMsg({ text: err.message || 'Kesalahan jaringan.', type: 'error' });
+      addLog('error', `Error chatbot save: ${err.message}`);
+    } finally {
+      setIsChatbotSaving(false);
+    }
+  };
+
+  const handleAddAutoReply = () => {
+    if (!newKeyword.trim() || !newReply.trim()) return;
+    const ruleExists = customAutoReplies.some(
+      r => r.keyword.toLowerCase() === newKeyword.trim().toLowerCase()
+    );
+    if (ruleExists) {
+      setChatbotStatusMsg({ text: 'Kata kunci ini sudah terdaftar!', type: 'error' });
+      setTimeout(() => setChatbotStatusMsg(null), 3000);
+      return;
+    }
+    const updated = [...customAutoReplies, { keyword: newKeyword.trim(), reply: newReply.trim() }];
+    setCustomAutoReplies(updated);
+    setNewKeyword('');
+    setNewReply('');
+  };
+
+  const handleDeleteAutoReply = (keywordToDelete: string) => {
+    const updated = customAutoReplies.filter(r => r.keyword !== keywordToDelete);
+    setCustomAutoReplies(updated);
+  };
+
+  // ---------------------------------------------------------------------------
+  // CONFIGURATION LOGIC (Save & Connect custom bot)
+  // ---------------------------------------------------------------------------
+  const saveBotSettings = async () => {
+    if (!currentUser) return;
+
+    setIsBotSaving(true);
+    addLog('info', 'Menyimpan konfigurasi bot pribadi ke cloud database...');
+
+    try {
+      const res = await fetch('/api/auth/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: currentUser.username,
+          botToken: botToken.trim(),
+          defaultFormat: defaultFormat,
+          telegramOwnerId: telegramOwnerId.trim(),
+        }),
+      });
+
+      let data: any;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error('Gagal memproses data server. Respons server bukan format JSON.');
+      }
+
+      if (data.success) {
+        const updatedSession = {
+          ...currentUser,
+          botToken: botToken.trim(),
+          defaultFormat,
+          telegramOwnerId: telegramOwnerId.trim(),
+        };
+        setCurrentUser(updatedSession);
+        localStorage.setItem('user_session', JSON.stringify(updatedSession));
+        addLog('success', 'Konfigurasi bot disimpan dengan sukses!');
+        if (botToken.trim()) {
+          checkBotStatus(botToken.trim());
+        }
+      } else {
+        addLog('error', `Gagal menyimpan konfigurasi: ${data.error}`);
+      }
+    } catch (err: any) {
+      addLog('error', `Kesalahan menyimpan: ${err.message}`);
+    } finally {
+      setIsBotSaving(false);
+    }
+  };
+
+  const handleBroadcast = async () => {
+    if (!currentUser || !botToken.trim() || !broadcastMessage.trim()) return;
+
+    setIsBroadcasting(true);
+    addLog('info', 'Mengirim siaran pengumuman owner ke semua pengguna bot...');
+
+    try {
+      const res = await fetch('/api/bot/broadcast', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          botToken: botToken.trim(),
+          message: broadcastMessage.trim(),
+        }),
+      });
+
+      let data: any;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error('Gagal memproses data server. Respons server bukan format JSON.');
+      }
+
+      if (data.success) {
+        addLog('success', `Siaran sukses! ${data.message}`);
+        setBroadcastMessage('');
+      } else {
+        addLog('error', `Gagal mengirim siaran: ${data.error}`);
+      }
+    } catch (err: any) {
+      addLog('error', `Kesalahan siaran: ${err.message}`);
+    } finally {
+      setIsBroadcasting(false);
+    }
+  };
+
+  const activateWebhook = async () => {
+    if (!botToken.trim() || !appUrl) return;
+    
+    setIsBotChecking(true);
+    const webhookUrl = `${appUrl}/api/telegram-webhook?token=${encodeURIComponent(botToken.trim())}`;
+    addLog('info', `Mendaftarkan webhook...`);
+
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${botToken.trim()}/setWebhook`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: webhookUrl,
+          allowed_updates: ['message', 'callback_query'],
+        }),
+      });
+
+      let json: any;
+      try {
+        json = await res.json();
+      } catch {
+        throw new Error('Respons dari Telegram API saat setWebhook tidak valid.');
+      }
+
+      if (json.ok) {
+        addLog('success', 'Webhook berhasil dihubungkan!');
+        
+        // Refresh webhook status
+        const whRes = await fetch(`https://api.telegram.org/bot${botToken.trim()}/getWebhookInfo`);
+        let whJson: any;
+        try {
+          whJson = await whRes.json();
+        } catch {
+          whJson = { ok: false };
+        }
+        if (whJson.ok) {
+          setWebhookInfo(whJson.result);
+          // Update profile in DB
+          if (currentUser) {
+            await fetch('/api/auth/update', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username: currentUser.username, webhookEnabled: true }),
+            });
+            const updated = { ...currentUser, webhookEnabled: true };
+            setCurrentUser(updated);
+            localStorage.setItem('user_session', JSON.stringify(updated));
+          }
+        }
+      } else {
+        addLog('error', `Webhook gagal: ${json.description}`);
+      }
+    } catch (err: any) {
+      addLog('error', `Error pendaftaran webhook: ${err.message}`);
+    } finally {
+      setIsBotChecking(false);
+    }
+  };
+
+  const deleteWebhook = async () => {
+    if (!botToken.trim()) return;
+
+    setIsBotChecking(true);
+    addLog('info', 'Menghapus webhook Telegram...');
+
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${botToken.trim()}/deleteWebhook`);
+      let json: any;
+      try {
+        json = await res.json();
+      } catch {
+        throw new Error('Respons dari Telegram API saat deleteWebhook tidak valid.');
+      }
+
+      if (json.ok) {
+        addLog('success', 'Webhook Telegram dinonaktifkan.');
+        setWebhookInfo(null);
+        if (currentUser) {
+          await fetch('/api/auth/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: currentUser.username, webhookEnabled: false }),
+          });
+          const updated = { ...currentUser, webhookEnabled: false };
+          setCurrentUser(updated);
+          localStorage.setItem('user_session', JSON.stringify(updated));
+        }
+      } else {
+        addLog('error', `Gagal menghapus webhook: ${json.description}`);
+      }
+    } catch (err: any) {
+      addLog('error', `Gagal mematikan webhook: ${err.message}`);
+    } finally {
+      setIsBotChecking(false);
+    }
+  };
+
+  const copyWebhookUrl = () => {
+    const webhookUrl = `${appUrl}/api/telegram-webhook?token=${botToken}`;
+    navigator.clipboard.writeText(webhookUrl);
+    setCopiedUrl(true);
+    setTimeout(() => setCopiedUrl(false), 2000);
+  };
+
+  // ---------------------------------------------------------------------------
+  // WEB DOWNLOADER LOGIC (Direct UI Extraction)
+  // ---------------------------------------------------------------------------
+  const handleWebDownload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!downloadInput.trim()) return;
+
+    setDownloadLoading(true);
+    setDownloadResult(null);
+    setDownloadError('');
+    addLog('info', `[Web] Mengekstrak tautan: ${downloadInput.substring(0, 40)}...`);
+
+    try {
+      const res = await fetch('/api/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: downloadInput }),
+      });
+
+      let data: any;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error('Gagal mengekstrak media dari server. Respons server bukan format JSON.');
+      }
+
+      if (data.success) {
+        setDownloadResult(data);
+        addLog('success', `[Web] Ekstraksi berhasil: "${data.title || 'Tanpa Judul'}"`);
+        // If logged in, update stats
+        if (currentUser) {
+          const updatedSession = { ...currentUser, downloadsCount: (currentUser.downloadsCount || 0) + 1 };
+          setCurrentUser(updatedSession);
+          localStorage.setItem('user_session', JSON.stringify(updatedSession));
+          // Save updated stats to DB
+          fetch('/api/auth/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: currentUser.username, downloadsCount: updatedSession.downloadsCount }),
+          });
+        }
+      } else {
+        setDownloadError(data.error || 'Gagal mengekstrak media. Tautan privat/salah.');
+        addLog('error', `[Web] Gagal ekstraksi: ${data.error}`);
+      }
+    } catch (err: any) {
+      setDownloadError('Kesalahan jaringan saat mengunduh.');
+      addLog('error', `[Web] Error koneksi: ${err.message}`);
+    } finally {
+      setDownloadLoading(false);
+    }
+  };
+
+  // ---------------------------------------------------------------------------
+  // TELEGRAM BOT SIMULATOR LOGIC
+  // ---------------------------------------------------------------------------
+  const sendSimMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!simInput.trim()) return;
+
+    const userText = simInput.trim();
+    const lowerText = userText.toLowerCase();
+    setSimInput('');
+
+    // Append User message to list
+    const userMsg: ChatMessage = {
+      id: Math.random().toString(36).substring(7),
+      sender: 'user',
+      text: userText,
+      timestamp: getFormattedTime(),
+    };
+    
+    setSimMessages(prev => [...prev, userMsg]);
+    setIsBotTyping(true);
+
+    // 1. HELP / MENU COMMANDS
+    if (lowerText === '/menu' || lowerText === '/help' || lowerText === 'menu' || lowerText === 'help') {
+      setTimeout(() => {
+        setIsBotTyping(false);
+        setSimMessages(prev => [...prev, {
+          id: Math.random().toString(36).substring(7),
+          sender: 'bot',
+          text: `🤖 *DifaBot Command Menu / Bantuan* 🤖\n\n` +
+                `Halo! Saya adalah *DifaBot*, asisten otomatis multi-platform Anda. Berikut adalah menu layanan dan perintah yang dapat saya jalankan:\n\n` +
+                `📹 *Download Media (Tanpa Watermark):*\n` +
+                `• *Instagram:* \`/ig <link>\` atau \`/instagram <link>\` (atau kirim link langsung)\n` +
+                `• *TikTok:* \`/tt <link>\` atau \`/tiktok <link>\` (atau kirim link langsung)\n` +
+                `• *Lainnya:* Anda juga bisa langsung mengirim link Instagram, TikTok, YouTube, Twitter/X, atau Facebook tanpa perintah khusus!\n\n` +
+                `📰 *Berita Terkini:* \`/news\` atau \`/berita\`\n` +
+                `• Menampilkan berita teknologi, AI, dan perkembangan startup terhangat secara real-time dari portal berita terpercaya.\n\n` +
+                `💬 *Interaksi Chat & Tanya Jawab:*\n` +
+                `• Kirim pesan teks biasa untuk mengobrol langsung dengan *AI Gemini* (didukung kustomisasi persona di dashboard) atau memicu balasan otomatis berdasarkan kata kunci yang Anda atur!`,
+          timestamp: getFormattedTime(),
+        }]);
+      }, 800);
+      return;
+    }
+
+    // 2. NEWS / BERITA COMMANDS
+    if (lowerText === '/news' || lowerText === '/berita' || lowerText === 'news' || lowerText === 'berita') {
+      try {
+        const res = await fetch('/api/news');
+        const data = await res.json();
+        setIsBotTyping(false);
+        if (data.success && data.news && data.news.length > 0) {
+          const itemsToFormat = data.news.slice(0, 4);
+          let newsText = `📰 *Breaking News / Berita Terkini* 📰\n\nMenampilkan berita hangat seputar teknologi, AI, dan perkembangan industri di Indonesia:\n\n`;
+          itemsToFormat.forEach((item: any, idx: number) => {
+            const cleanTitle = item.title.replace(/\*/g, '').trim();
+            const cleanDesc = item.description.replace(/\*/g, '').trim();
+            newsText += `${idx + 1}. *${cleanTitle}*\n`;
+            newsText += `_${cleanDesc}_\n`;
+            if (item.link && item.link !== '#') {
+              newsText += `🔗 [Baca Selengkapnya](${item.link})\n`;
+            }
+            newsText += `✍️ *Sumber:* ${item.creator || 'Antara News'} | 📅 _${item.pubDate || 'Hari Ini'}_\n\n`;
+          });
+          newsText += `💡 _Ketik \`/menu\` untuk melihat bantuan atau menu utama._`;
+
+          setSimMessages(prev => [...prev, {
+            id: Math.random().toString(36).substring(7),
+            sender: 'bot',
+            text: newsText,
+            timestamp: getFormattedTime(),
+          }]);
+        } else {
+          setSimMessages(prev => [...prev, {
+            id: Math.random().toString(36).substring(7),
+            sender: 'bot',
+            text: '❌ *Gagal memuat berita:* Maaf, terjadi kesalahan saat mengambil berita terkini dari portal berita.',
+            timestamp: getFormattedTime(),
+          }]);
+        }
+      } catch (err: any) {
+        setIsBotTyping(false);
+        setSimMessages(prev => [...prev, {
+          id: Math.random().toString(36).substring(7),
+          sender: 'bot',
+          text: `❌ *Error memuat berita:* ${err.message || 'Kesalahan jaringan.'}`,
+          timestamp: getFormattedTime(),
+        }]);
+      }
+      return;
+    }
+
+    // 3. DETECT downloader prefix commands: /ig, /instagram, /tt, /tiktok
+    let hasMediaCommand = false;
+    let targetUrl = '';
+    
+    if (lowerText.startsWith('/ig ') || lowerText.startsWith('/instagram ')) {
+      hasMediaCommand = true;
+      targetUrl = userText.replace(/^\/ig\s+/i, '').replace(/^\/instagram\s+/i, '').trim();
+    } else if (lowerText.startsWith('/tt ') || lowerText.startsWith('/tiktok ')) {
+      hasMediaCommand = true;
+      targetUrl = userText.replace(/^\/tt\s+/i, '').replace(/^\/tiktok\s+/i, '').trim();
+    }
+
+    if (hasMediaCommand && !targetUrl) {
+      setTimeout(() => {
+        setIsBotTyping(false);
+        setSimMessages(prev => [...prev, {
+          id: Math.random().toString(36).substring(7),
+          sender: 'bot',
+          text: `⚠️ *Format Perintah Salah!*\n\nSilakan masukkan tautan media sosial yang ingin diunduh.\nContoh: \`/ig https://instagram.com/p/xxxxx\` atau \`/tt https://vt.tiktok.com/xxxxx\``,
+          timestamp: getFormattedTime(),
+          }]);
+        }, 600);
+        return;
+    }
+
+    // Detect URL from the message text or from the targetUrl of the command
+    const textToSearch = hasMediaCommand ? targetUrl : userText;
+    const linkRegex = /(https?:\/\/[^\s]+)/gi;
+    const linkMatch = textToSearch.match(linkRegex);
+
+    if (linkMatch) {
+      const detectedUrl = linkMatch[0];
+      const lowerUrl = detectedUrl.toLowerCase();
+      const source = lowerUrl.includes('tiktok.com') || lowerUrl.includes('vt.tiktok') || lowerUrl.includes('douyin.com') ? 'tiktok' : 
+                     lowerUrl.includes('instagram.com') || lowerUrl.includes('instagr.am') ? 'instagram' :
+                     lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be') ? 'youtube' :
+                     lowerUrl.includes('twitter.com') || lowerUrl.includes('x.com') ? 'twitter' :
+                     lowerUrl.includes('facebook.com') || lowerUrl.includes('fb.watch') || lowerUrl.includes('fb.com') ? 'facebook' : 'other';
+
+      if (source === 'other') {
+        setTimeout(() => {
+          setIsBotTyping(false);
+          setSimMessages(prev => [...prev, {
+            id: Math.random().toString(36).substring(7),
+            sender: 'bot',
+            text: '❌ *Tautan tidak didukung!*\n\nSaya mendukung tautan dari *TikTok*, *Instagram*, *YouTube*, *Twitter/X*, dan *Facebook* tanpa watermark.',
+            timestamp: getFormattedTime(),
+          }]);
+        }, 1000);
+        return;
+      }
+
+      // Generate Option buttons in simulator instead of instant downloading
+      setTimeout(() => {
+        setIsBotTyping(false);
+        setSimMessages(prev => [...prev, {
+          id: Math.random().toString(36).substring(7),
+          sender: 'bot',
+          text: `📥 *Tautan ${source.toUpperCase()} Terdeteksi!*\n\nSilakan pilih format pengiriman media untuk link ini di simulator:`,
+          timestamp: getFormattedTime(),
+          isOptionsPanel: true,
+          urlHash: detectedUrl, // temp store the raw URL
+        }]);
+      }, 1000);
+
+    } else {
+      if (hasMediaCommand) {
+        setTimeout(() => {
+          setIsBotTyping(false);
+          setSimMessages(prev => [...prev, {
+            id: Math.random().toString(36).substring(7),
+            sender: 'bot',
+            text: `⚠️ *Tautan tidak valid!*\n\nSaya tidak mendeteksi URL yang valid dalam perintah Anda. Pastikan diawali dengan \`http://\` atau \`https://\`.`,
+            timestamp: getFormattedTime(),
+          }]);
+        }, 600);
+        return;
+      }
+
+      // Direct text chat through Gemini API (honoring custom Chatbot settings)
+      const isEnabled = currentUser ? (chatbotEnabled !== false) : true;
+      if (!isEnabled) {
+        setTimeout(() => {
+          setIsBotTyping(false);
+          setSimMessages(prev => [...prev, {
+            id: Math.random().toString(36).substring(7),
+            sender: 'bot',
+            text: '📴 *Sistem Chatbot Nonaktif:* Pemilik bot telah menonaktifkan fitur obrolan otomatis saat ini.',
+            timestamp: getFormattedTime(),
+          }]);
+        }, 600);
+        return;
+      }
+
+      const type = currentUser ? chatbotType : 'ai';
+      const replies = currentUser ? customAutoReplies : [];
+
+      // 1. Keyword auto replies
+      if (type !== 'ai' && replies.length > 0) {
+        const matched = replies.find(
+          r => r.keyword && userText.toLowerCase().includes(r.keyword.toLowerCase())
+        );
+        if (matched) {
+          setTimeout(() => {
+            setIsBotTyping(false);
+            setSimMessages(prev => [...prev, {
+              id: Math.random().toString(36).substring(7),
+              sender: 'bot',
+              text: matched.reply,
+              timestamp: getFormattedTime(),
+            }]);
+          }, 800);
+          return;
+        }
+      }
+
+      // 2. Custom-only mode fallback
+      if (type === 'custom') {
+        setTimeout(() => {
+          setIsBotTyping(false);
+          setSimMessages(prev => [...prev, {
+            id: Math.random().toString(36).substring(7),
+            sender: 'bot',
+            text: '🤖 *Asisten Otomatis:* Kata kunci tidak dikenali. Silakan kirimkan tautan media sosial untuk diunduh langsung!',
+            timestamp: getFormattedTime(),
+          }]);
+        }, 800);
+        return;
+      }
+
+      // 3. AI Gemini Chat with custom Prompt support
+      try {
+        const contextHistory = simMessages
+          .slice(-6)
+          .filter(m => !m.media && !m.isOptionsPanel)
+          .map(m => ({ role: m.sender, text: m.text }));
+
+        const res = await fetch('/api/gemini', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            message: userText, 
+            chatHistory: contextHistory,
+            customSystemInstruction: chatbotPrompt
+          }),
+        });
+
+        let geminiData: any;
+        try {
+          geminiData = await res.json();
+        } catch {
+          throw new Error('Respons dari server Gemini tidak valid.');
+        }
+        setIsBotTyping(false);
+
+        setSimMessages(prev => [...prev, {
+          id: Math.random().toString(36).substring(7),
+          sender: 'bot',
+          text: geminiData.reply,
+          timestamp: getFormattedTime(),
+        }]);
+      } catch {
+        setIsBotTyping(false);
+        setSimMessages(prev => [...prev, {
+          id: Math.random().toString(36).substring(7),
+          sender: 'bot',
+          text: 'Halo! Ada yang bisa dibantu? Silakan kirim link media sosial Anda untuk download instan.',
+          timestamp: getFormattedTime(),
+        }]);
+      }
+    }
+  };
+
+  // User clicks format option inside simulator chat
+  const handleSimulatorFormatChoice = async (format: 'media' | 'file' | 'audio', originalUrl: string, panelId: string) => {
+    // Replace Option Panel with processing text
+    setSimMessages(prev => prev.map(m => m.id === panelId ? {
+      ...m,
+      isOptionsPanel: false,
+      text: `⏳ *Sedang mendownload dan mengirim dengan format [${format.toUpperCase()}]...*`
+    } : m));
+
+    setIsBotTyping(true);
+
+    try {
+      const res = await fetch('/api/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: originalUrl }),
+      });
+
+      let data: any;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error('Gagal mengekstrak media untuk simulasi. Respons dari server tidak valid.');
+      }
+      setIsBotTyping(false);
+
+      if (data.success) {
+        // Adjust results based on user selected format
+        const responseText = `📥 *Berhasil Diunduh!*\n\n📝 *Judul:* ${data.title || 'Video Media'}\n⚙️ *Format:* ${format === 'file' ? '📁 Dokumen / File' : format === 'audio' ? '🎵 Audio MP3' : '📹 Media (Video/Foto)'}`;
+        
+        setSimMessages(prev => [...prev, {
+          id: Math.random().toString(36).substring(7),
+          sender: 'bot',
+          text: responseText,
+          timestamp: getFormattedTime(),
+          media: {
+            ...data,
+            // Override visibility according to chosen format representation
+            videoUrl: format === 'audio' ? undefined : data.videoUrl,
+            images: format === 'audio' || format === 'file' ? [] : data.images,
+          }
+        }]);
+
+        addLog('success', `[Simulator] Berhasil mengunduh format ${format} untuk simulasi.`);
+      } else {
+        setSimMessages(prev => [...prev, {
+          id: Math.random().toString(36).substring(7),
+          sender: 'bot',
+          text: `❌ *Gagal Mengunduh!*\n\n${data.error || 'Server sedang sibuk.'}`,
+          timestamp: getFormattedTime(),
+        }]);
+      }
+    } catch {
+      setIsBotTyping(false);
+      setSimMessages(prev => [...prev, {
+        id: Math.random().toString(36).substring(7),
+        sender: 'bot',
+        text: '❌ Terjadi kegagalan jaringan saat menghubungi modul pengunduh.',
+        timestamp: getFormattedTime(),
+      }]);
+    }
+  };
+
+  const getMediaSourceColor = (source: string) => {
+    switch(source) {
+      case 'tiktok': return 'bg-black text-white border border-slate-700';
+      case 'instagram': return 'bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 text-white';
+      case 'youtube': return 'bg-red-600 text-white';
+      case 'twitter': return 'bg-sky-500 text-white';
+      case 'facebook': return 'bg-indigo-600 text-white';
+      default: return 'bg-slate-600 text-white';
+    }
+  };
+
+  const isDark = theme === 'dark';
+
+  // Theme-adaptive classes
+  const cardClass = isDark 
+    ? "bg-slate-900/60 backdrop-blur-xl border border-slate-850/80 text-slate-100" 
+    : "bg-white border border-slate-200/80 text-slate-800 shadow-sm";
+    
+  const innerCardClass = isDark 
+    ? "bg-slate-950/50 border border-slate-900/50 text-slate-300" 
+    : "bg-slate-50 border border-slate-100 text-slate-600";
+    
+  const borderClass = isDark 
+    ? "border-slate-800/80" 
+    : "border-slate-150";
+    
+  const labelClass = isDark 
+    ? "text-slate-400" 
+    : "text-slate-500";
+    
+  const inputClass = isDark 
+    ? "bg-slate-950/80 border border-slate-800 focus:border-emerald-500 text-slate-100 focus:ring-1 focus:ring-emerald-500" 
+    : "bg-slate-50 border border-slate-200 focus:border-emerald-500 text-slate-800 focus:ring-1 focus:ring-emerald-500";
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center font-sans">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-xs text-slate-400 font-medium animate-pulse">Memuat aplikasi...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div id="main_container" className={`min-h-screen flex flex-col font-sans selection:bg-emerald-500 selection:text-white transition-colors duration-300 ${
+      isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
+    }`}>
+      
+      {/* GLOW DECORATIONS */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-sky-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+      {/* HEADER SECTION */}
+      <header id="app_header" className={`border-b backdrop-blur-md sticky top-0 z-40 px-4 py-3 transition-colors duration-300 ${
+        isDark ? 'border-slate-800/80 bg-slate-900/40 text-slate-100' : 'border-slate-200 bg-white/80 text-slate-900 shadow-sm'
+      }`}>
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-1 bg-emerald-500/10 border border-emerald-500/20 rounded-xl shadow-lg">
+              <DifaBotLogo className="w-9 h-9" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 via-emerald-250 to-teal-300 bg-clip-text text-transparent">
+                  DifaBot Premium
+                </h1>
+                <span className="bg-gradient-to-r from-emerald-500 to-teal-500 text-[10px] font-black px-2 py-0.5 rounded-full uppercase shadow text-white">v2.0</span>
+              </div>
+              <p className={`text-xs font-medium hidden sm:block ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                Telegram Multi-Client Bot Manager with TikTok & Instagram watermarks-free extractors
+              </p>
+            </div>
+          </div>
+          
+          {/* Main Controls Header */}
+          <div className="flex items-center gap-3 w-full md:w-auto justify-center md:justify-end">
+            {currentUser && (
+              <div className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-colors duration-300 ${
+                isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-slate-100 border-slate-200'
+              }`}>
+                <User className="w-3.5 h-3.5 text-sky-450" />
+                <span className={`text-xs font-bold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{currentUser.username}</span>
+                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span>
+              </div>
+            )}
+
+            {/* Elegant Theme Toggle Button */}
+            <button
+              id="theme_toggle_btn"
+              onClick={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')}
+              className={`p-2 rounded-xl border transition-all duration-300 cursor-pointer flex-shrink-0 ${
+                isDark 
+                  ? 'bg-slate-900/80 border-slate-800 text-amber-400 hover:text-amber-300 hover:bg-slate-800' 
+                  : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 shadow-sm'
+              }`}
+              title={isDark ? "Ganti ke Tema Terang" : "Ganti ke Tema Gelap"}
+              aria-label="Toggle Theme"
+            >
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+
+            {/* Navigation Tabs - Only show when logged in */}
+            {currentUser && (
+              <div className={`flex p-1 rounded-xl border transition-colors duration-300 w-full md:w-auto ${
+                isDark ? 'bg-slate-900/90 border-slate-800/80' : 'bg-slate-100 border-slate-200 shadow-inner'
+              }`}>
+                <button
+                  onClick={() => setActiveTab('manager')}
+                  className={`flex-1 md:flex-none px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[10.5px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                    activeTab === 'manager' 
+                      ? 'bg-sky-500 text-white shadow-md' 
+                      : isDark 
+                        ? 'text-slate-400 hover:text-white hover:bg-slate-800/40' 
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                  }`}
+                >
+                  <Settings className="w-3.5 h-3.5" />
+                  <span className="sm:hidden">Manager</span>
+                  <span className="hidden sm:inline">Bot Manager</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('simulator')}
+                  className={`flex-1 md:flex-none px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[10.5px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                    activeTab === 'simulator' 
+                      ? 'bg-sky-500 text-white shadow-md' 
+                      : isDark 
+                        ? 'text-slate-400 hover:text-white hover:bg-slate-800/40' 
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                  }`}
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span className="sm:hidden">Simulator</span>
+                  <span className="hidden sm:inline">Bot Simulator</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('downloader')}
+                  className={`flex-1 md:flex-none px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[10.5px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                    activeTab === 'downloader' 
+                      ? 'bg-sky-500 text-white shadow-md' 
+                      : isDark 
+                        ? 'text-slate-400 hover:text-white hover:bg-slate-800/40' 
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                  }`}
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span className="sm:hidden">Extractor</span>
+                  <span className="hidden sm:inline">Web Extractor</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {/* LOGIN & REGISTER PORTAL */}
+      <AnimatePresence mode="wait">
+        {!currentUser ? (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            className="flex-1 flex items-center justify-center px-4 py-12"
+          >
+            <div className={`${cardClass} p-6 sm:p-8 rounded-3xl w-full max-w-md shadow-2xl relative flex flex-col gap-6 transition-all duration-300`}>
+              
+              <div className="absolute top-0 right-0 w-32 h-32 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+              <div className="flex flex-col items-center text-center gap-2">
+                <div className={`p-3 rounded-2xl border transition-colors ${
+                  isDark ? 'bg-slate-950 border-slate-800 text-sky-400' : 'bg-slate-100 border-slate-200 text-sky-600 shadow-sm'
+                }`}>
+                  <Bot className="w-8 h-8 animate-bounce" />
+                </div>
+                <h2 className={`text-xl font-extrabold tracking-tight transition-colors ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>
+                  {authMode === 'login' ? 'Masuk ke Akun Anda' : 'Daftar Akun Baru'}
+                </h2>
+                <p className={`text-xs transition-colors max-w-[80%] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                  {authMode === 'login' 
+                    ? 'Gunakan akun Anda untuk mengakses dan mengonfigurasi token Bot Telegram personal Anda.' 
+                    : 'Buat akun untuk meluncurkan klien Telegram downloader bot tersendiri.'}
+                </p>
+              </div>
+
+              {authError && (
+                <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-xl text-red-400 text-xs flex gap-2">
+                  <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  <span>{authError}</span>
+                </div>
+              )}
+
+              {authSuccess && (
+                <div className="bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-xl text-emerald-400 text-xs flex gap-2">
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  <span>{authSuccess}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleAuth} className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className={`text-xs font-bold flex items-center gap-1 transition-colors ${labelClass}`}>
+                    <User className="w-3.5 h-3.5" /> Username
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Masukkan username Anda..."
+                    value={authUsername}
+                    onChange={(e) => setAuthUsername(e.target.value)}
+                    className={`w-full rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/40 transition ${
+                      isDark 
+                        ? 'bg-slate-950 border border-slate-800 text-slate-200 placeholder:text-slate-600' 
+                        : 'bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-450'
+                    }`}
+                    required
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className={`text-xs font-bold flex items-center gap-1 transition-colors ${labelClass}`}>
+                    <Lock className="w-3.5 h-3.5" /> Password
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="Masukkan password Anda..."
+                    value={authPassword}
+                    onChange={(e) => setAuthPassword(e.target.value)}
+                    className={`w-full rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/40 transition ${
+                      isDark 
+                        ? 'bg-slate-950 border border-slate-800 text-slate-200 placeholder:text-slate-600' 
+                        : 'bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-450'
+                    }`}
+                    required
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={authLoading}
+                  className="w-full bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 font-extrabold text-white py-3 rounded-xl text-xs transition shadow-lg shadow-sky-500/10 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  {authLoading ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : authMode === 'login' ? (
+                    <>
+                      <LogIn className="w-4 h-4" /> Masuk Sekarang
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="w-4 h-4" /> Daftar Akun
+                    </>
+                  )}
+                </button>
+              </form>
+
+              <div className={`border-t pt-4 text-center transition-colors ${borderClass}`}>
+                <button
+                  onClick={() => {
+                    setAuthMode(authMode === 'login' ? 'register' : 'login');
+                    setAuthError('');
+                    setAuthSuccess('');
+                  }}
+                  className="text-xs text-sky-500 hover:text-sky-600 font-bold transition cursor-pointer"
+                >
+                  {authMode === 'login' ? 'Belum punya akun? Daftar di sini' : 'Sudah punya akun? Masuk di sini'}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        ) : (
+          // 2. ACTIVE VIEW OR LOGGED IN WORKSPACE
+          <motion.main 
+            key="workspace-main"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={`flex-1 max-w-7xl w-full mx-auto p-4 transition-colors duration-300 ${
+              currentUser 
+                ? "grid grid-cols-1 lg:grid-cols-12 gap-6" 
+                : "flex flex-col gap-6 items-center w-full"
+            }`}
+          >
+            
+            {/* COLUMN 1: BOT CONFIGURATION (Left Column - ONLY rendered if user logged in) */}
+            {currentUser && (
+              <div className={`lg:col-span-4 flex flex-col gap-6 w-full ${activeTab === 'manager' ? 'block' : 'hidden lg:flex'}`}>
+                
+                {/* BOT CONFIG CARD */}
+                <section id="bot_connector_card" className={`${cardClass} p-5 flex flex-col gap-4 transition-all duration-300`}>
+                  <div className={`flex items-center justify-between pb-2 border-b ${borderClass}`}>
+                    <div className="flex items-center gap-2.5">
+                      <Settings className="w-5 h-5 text-emerald-500" />
+                      <h2 className="font-bold">Pengaturan Bot Klien</h2>
+                    </div>
+                    <button 
+                      onClick={handleLogout}
+                      className={`p-1 rounded transition flex items-center gap-1 text-[10px] font-bold text-red-500 ${
+                        isDark ? 'hover:bg-slate-800 hover:text-red-400' : 'hover:bg-red-50 hover:text-red-600'
+                      }`}
+                    >
+                      <LogOut className="w-3.5 h-3.5" /> Keluar
+                    </button>
+                  </div>
+
+                  <div className={`p-3 rounded-xl text-[11px] flex flex-col gap-1 leading-relaxed ${innerCardClass}`}>
+                    <span className="font-bold text-emerald-500 flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" /> Dashboard Client: <span className={isDark ? 'text-slate-200' : 'text-slate-800'}>{currentUser.username}</span>
+                    </span>
+                    <span className={isDark ? 'text-slate-450' : 'text-slate-600'}>Anda bisa meluncurkan satu unit bot pengunduh khusus untuk Anda sendiri yang terhubung langsung ke server media kami.</span>
+                  </div>
+
+                  {/* Input Token */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className={`text-xs font-semibold flex items-center gap-1.5 ${labelClass}`}>
+                      <Key className="w-3.5 h-3.5 text-emerald-500" /> Kunci Bot Token (Telegram API)
+                    </label>
+                    <input
+                      type="password"
+                      placeholder="Masukkan token dari @BotFather..."
+                      value={botToken}
+                      onChange={(e) => setBotToken(e.target.value)}
+                      className={`w-full rounded-xl px-3.5 py-2.5 text-xs transition ${inputClass}`}
+                    />
+                  </div>
+
+                  {/* Input Telegram Owner ID */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className={`text-xs font-semibold flex items-center gap-1.5 ${labelClass}`}>
+                      <User className="w-3.5 h-3.5 text-emerald-500" /> ID Telegram Owner (Opsional)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Masukkan ID Telegram Anda (misal: 123456789)..."
+                      value={telegramOwnerId}
+                      onChange={(e) => setTelegramOwnerId(e.target.value)}
+                      className={`w-full rounded-xl px-3.5 py-2.5 text-xs transition ${inputClass}`}
+                    />
+                    <span className="text-[10px] text-slate-500 italic leading-snug">
+                      Gunakan bot seperti @userinfobot di Telegram untuk mengetahui ID Anda. ID ini akan dibaca sebagai owner bot untuk melakukan broadcast siaran.
+                    </span>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      onClick={saveBotSettings}
+                      disabled={isBotSaving}
+                      className="flex-1 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <Check className="w-3.5 h-3.5" /> Simpan Config
+                    </button>
+                    {botToken.trim() && (
+                      <button
+                        onClick={() => checkBotStatus(botToken)}
+                        disabled={isBotChecking}
+                        className={`py-2 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1.5 cursor-pointer ${
+                          isDark 
+                            ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700/50' 
+                            : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-350'
+                        }`}
+                      >
+                        <RefreshCw className={`w-3.5 h-3.5 ${isBotChecking ? 'animate-spin' : ''}`} />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* BOT INFORMATION PORTAL */}
+                  {botInfo && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`p-4 rounded-xl flex flex-col gap-3 ${innerCardClass}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-extrabold text-sm shadow">
+                          {botInfo.first_name ? botInfo.first_name[0] : 'B'}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className={`font-bold text-xs truncate ${isDark ? 'text-slate-100' : 'text-slate-850'}`}>{botInfo.first_name}</div>
+                          <div className="text-[10px] text-emerald-500 truncate font-mono">@{botInfo.username}</div>
+                        </div>
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] border border-emerald-500/20 font-bold">
+                          Online
+                        </span>
+                      </div>
+
+                      {/* Webhook Configuration Block */}
+                      <div className={`border-t pt-3 flex flex-col gap-2 ${borderClass}`}>
+                        <div className="flex justify-between items-center text-[10px]">
+                          <span className={`${labelClass} font-medium`}>Webhook Telegram API</span>
+                          {webhookInfo?.url ? (
+                            <span className="text-emerald-500 font-bold flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span>
+                              Terhubung
+                            </span>
+                          ) : (
+                            <span className="text-yellow-600 font-bold">Belum Terhubung</span>
+                          )}
+                        </div>
+
+                        {webhookInfo?.url && (
+                          <div className={`flex flex-col gap-1.5 p-2 rounded-lg ${cardClass}`}>
+                            <span className="text-[9px] text-slate-400 font-mono">WEBHOOK ENDPOINT:</span>
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-[10px] truncate font-mono select-all text-slate-500">
+                                {appUrl}/api/telegram-webhook?token=...
+                              </span>
+                              <button 
+                                onClick={copyWebhookUrl}
+                                className={`p-1 rounded transition ${isDark ? 'hover:bg-slate-800 text-slate-400 hover:text-white' : 'hover:bg-slate-100 text-slate-500 hover:text-slate-850'}`}
+                                title="Salin Webhook URL"
+                              >
+                                {copiedUrl ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="flex gap-2 mt-1">
+                          {!webhookInfo?.url ? (
+                            <button
+                              onClick={activateWebhook}
+                              disabled={isBotChecking}
+                              className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold py-1.5 px-3 rounded-lg text-[11px] transition shadow flex items-center justify-center gap-1 cursor-pointer"
+                            >
+                              <Globe className="w-3.5 h-3.5" /> Sambungkan Bot Webhook
+                            </button>
+                          ) : (
+                            <button
+                              onClick={deleteWebhook}
+                              disabled={isBotChecking}
+                              className="flex-1 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 font-bold py-1.5 px-3 rounded-lg text-[11px] transition flex items-center justify-center gap-1 cursor-pointer"
+                            >
+                              <XCircle className="w-3.5 h-3.5" /> Putus Hubungan Webhook
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </section>
+
+                {/* BROADCAST CARD */}
+                {botToken.trim() && (
+                  <section id="broadcast_card" className={`${cardClass} p-5 flex flex-col gap-4 shadow-xl transition-all duration-300`}>
+                    <div className={`flex items-center gap-2.5 pb-2 border-b ${borderClass}`}>
+                      <Volume2 className="w-5 h-5 text-emerald-500" />
+                      <h2 className="font-bold">Broadcast Pengumuman</h2>
+                    </div>
+
+                    <div className={`p-3 rounded-xl text-[11px] leading-relaxed ${innerCardClass}`}>
+                      <span className="font-bold text-emerald-500">Kirim Pesan ke Semua Pengguna:</span>
+                      <p className={isDark ? 'text-slate-450' : 'text-slate-600'}>
+                        Kirim pesan pengumuman/siaran secara massal ke seluruh pengguna yang pernah berinteraksi dengan bot Telegram Anda.
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <label className={`text-xs font-semibold ${labelClass}`}>
+                        Isi Pesan Siaran
+                      </label>
+                      <textarea
+                        placeholder="Tulis pengumuman Anda di sini..."
+                        value={broadcastMessage}
+                        onChange={(e) => setBroadcastMessage(e.target.value)}
+                        rows={3}
+                        className={`w-full rounded-xl px-3.5 py-2.5 text-xs transition resize-none ${inputClass}`}
+                      />
+                    </div>
+
+                    <button
+                      onClick={handleBroadcast}
+                      disabled={isBroadcasting || !broadcastMessage.trim()}
+                      className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-bold py-2 px-4 rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      {isBroadcasting ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          Mengirim Siaran...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-3.5 h-3.5" />
+                          Kirim Broadcast
+                        </>
+                      )}
+                    </button>
+                  </section>
+                )}
+
+                {/* REAL-TIME CLIENT STATISTICS */}
+                <section id="stats_card" className={`${cardClass} p-5 flex flex-col gap-3.5 shadow-xl transition-all duration-300`}>
+                  <div className={`flex items-center gap-2.5 pb-2 border-b ${borderClass}`}>
+                    <HardDrive className="w-5 h-5 text-emerald-500" />
+                    <h2 className="font-bold">Statistik Klien</h2>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className={`p-3 rounded-xl flex flex-col gap-1 ${innerCardClass}`}>
+                      <span className="text-[10px] text-slate-500 font-bold uppercase">Unduhan Berhasil</span>
+                      <span className="text-xl font-black text-emerald-500">{currentUser.downloadsCount || 0}</span>
+                    </div>
+                    <div className={`p-3 rounded-xl flex flex-col gap-1 ${innerCardClass}`}>
+                      <span className="text-[10px] text-slate-500 font-bold uppercase">Status Integrasi</span>
+                      <span className="text-xs font-extrabold text-emerald-500 flex items-center gap-1 mt-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Aktif
+                      </span>
+                    </div>
+                  </div>
+                  <div className={`p-3 rounded-xl text-[11px] flex items-start gap-2.5 leading-relaxed ${innerCardClass}`}>
+                    <HelpCircle className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                    <span className={isDark ? 'text-slate-450' : 'text-slate-600'}>Kirim link Instagram Reels atau TikTok ke bot Telegram Anda. Menu format kirim inline akan otomatis muncul di aplikasi chat Anda!</span>
+                  </div>
+                </section>
+
+                {/* CHATBOT & AUTO-RESPONSE CONFIGURATION */}
+                <section id="chatbot_card" className={`${cardClass} p-5 flex flex-col gap-4 shadow-xl transition-all duration-300`}>
+                  <div className={`flex items-center justify-between pb-2 border-b ${borderClass}`}>
+                    <div className="flex items-center gap-2.5">
+                      <MessageSquare className="w-5 h-5 text-emerald-500" />
+                      <h2 className="font-bold">Chatbot & Balasan Otomatis</h2>
+                    </div>
+                    {/* Switch/Toggle to Enable/Disable Chatbot */}
+                    <button 
+                      onClick={() => setChatbotEnabled(!chatbotEnabled)}
+                      className={`relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                        chatbotEnabled ? 'bg-emerald-500' : 'bg-slate-700'
+                      }`}
+                    >
+                      <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                        chatbotEnabled ? 'translate-x-5' : 'translate-x-0'
+                      }`} />
+                    </button>
+                  </div>
+
+                  <div className={`p-3 rounded-xl text-[11px] leading-relaxed ${innerCardClass}`}>
+                    <span className="font-bold text-emerald-500">Kustomisasi Chatbot:</span>
+                    <p className={isDark ? 'text-slate-450' : 'text-slate-600'}>
+                      Tentukan bagaimana bot merespon pesan selain tautan media sosial. Menggunakan AI Gemini atau balasan kata kunci instan.
+                    </p>
+                  </div>
+
+                  {chatbotEnabled && (
+                    <div className="flex flex-col gap-4">
+                      {/* Chatbot Type Selector */}
+                      <div className="flex flex-col gap-1.5">
+                        <label className={`text-xs font-semibold ${labelClass}`}>Metode Respon</label>
+                        <div className="grid grid-cols-3 gap-2">
+                          {[
+                            { id: 'ai', label: 'AI Gemini' },
+                            { id: 'custom', label: 'Keyword' },
+                            { id: 'hybrid', label: 'Hybrid' }
+                          ].map((t) => (
+                            <button
+                              key={t.id}
+                              type="button"
+                              onClick={() => setChatbotType(t.id as any)}
+                              className={`py-1.5 px-1 rounded-lg text-[10px] font-bold border transition cursor-pointer ${
+                                chatbotType === t.id 
+                                  ? 'bg-emerald-500/10 border-emerald-500 text-emerald-500' 
+                                  : isDark
+                                    ? 'bg-slate-800/40 border-slate-750 text-slate-400 hover:text-slate-300'
+                                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-800'
+                              }`}
+                            >
+                              {t.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Gemini Custom Instruction Prompt */}
+                      {(chatbotType === 'ai' || chatbotType === 'hybrid') && (
+                        <div className="flex flex-col gap-1.5">
+                          <label className={`text-xs font-semibold flex items-center gap-1 ${labelClass}`}>
+                            <Sparkles className="w-3.5 h-3.5 text-emerald-500" /> Instruksi Sistem AI (Persona)
+                          </label>
+                          <textarea
+                            placeholder="Contoh: Jawab dengan gaya asisten gaul Jakarta yang ramah..."
+                            value={chatbotPrompt}
+                            onChange={(e) => setChatbotPrompt(e.target.value)}
+                            rows={3}
+                            className={`w-full rounded-xl px-3 py-2 text-xs transition resize-none ${inputClass}`}
+                          />
+                        </div>
+                      )}
+
+                      {/* Custom Keyword Rules Form */}
+                      {(chatbotType === 'custom' || chatbotType === 'hybrid') && (
+                        <div className="flex flex-col gap-2.5 border-t pt-3 border-dashed border-slate-700/50">
+                          <label className={`text-xs font-semibold ${labelClass}`}>Aturan Balasan Kata Kunci</label>
+                          
+                          {/* List of custom keyword rules */}
+                          {customAutoReplies.length > 0 ? (
+                            <div className="flex flex-col gap-1.5 max-h-[140px] overflow-y-auto scrollbar-thin pr-1">
+                              {customAutoReplies.map((rule) => (
+                                <div 
+                                  key={rule.keyword} 
+                                  className={`flex items-center justify-between p-2 rounded-lg text-[11px] gap-2 ${innerCardClass}`}
+                                >
+                                  <div className="min-w-0 flex-1">
+                                    <span className="font-extrabold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded mr-1.5 font-mono">
+                                      {rule.keyword}
+                                    </span>
+                                    <span className={`truncate block mt-1 ${isDark ? 'text-slate-350' : 'text-slate-700'}`}>
+                                      {rule.reply}
+                                    </span>
+                                  </div>
+                                  <button
+                                    onClick={() => handleDeleteAutoReply(rule.keyword)}
+                                    type="button"
+                                    className="p-1 rounded text-red-500 hover:bg-red-500/10 cursor-pointer"
+                                    title="Hapus aturan"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className={`p-3 rounded-lg text-[10.5px] text-center text-slate-500 ${innerCardClass}`}>
+                              Belum ada aturan kata kunci. Tambahkan di bawah!
+                            </div>
+                          )}
+
+                          {/* Add keyword rule input row */}
+                          <div className="flex flex-col gap-1.5 bg-slate-500/5 p-2 rounded-xl">
+                            <div className="grid grid-cols-2 gap-1.5">
+                              <input
+                                type="text"
+                                placeholder="Kata Kunci (cth: /info)"
+                                value={newKeyword}
+                                onChange={(e) => setNewKeyword(e.target.value)}
+                                className={`rounded-lg px-2 py-1.5 text-[10px] ${inputClass}`}
+                              />
+                              <input
+                                type="text"
+                                placeholder="Balasan pesan..."
+                                value={newReply}
+                                onChange={(e) => setNewReply(e.target.value)}
+                                className={`rounded-lg px-2 py-1.5 text-[10px] ${inputClass}`}
+                              />
+                            </div>
+                            <button
+                              onClick={handleAddAutoReply}
+                              type="button"
+                              className="w-full py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[10.5px] font-bold transition flex items-center justify-center gap-1 cursor-pointer"
+                            >
+                              <Plus className="w-3 h-3" /> Tambah Aturan
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Save Settings Button */}
+                  <div className="flex flex-col gap-2 pt-2 border-t border-slate-700/30">
+                    <button
+                      onClick={saveChatbotSettings}
+                      disabled={isChatbotSaving}
+                      className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-bold py-2 px-4 rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      {isChatbotSaving ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                      Simpan Fitur Chatbot
+                    </button>
+                    {chatbotStatusMsg && (
+                      <span className={`text-[10px] font-bold text-center ${
+                        chatbotStatusMsg.type === 'success' ? 'text-emerald-500' : 'text-red-500'
+                      }`}>
+                        {chatbotStatusMsg.text}
+                      </span>
+                    )}
+                  </div>
+                </section>
+              </div>
+            )}
+            
+            {/* COLUMN 2: SIMULATOR (Middle Column - Instant Access) */}
+            <div className={`flex flex-col gap-4 h-[calc(100vh-140px)] min-h-[550px] transition-all duration-300 ${
+              currentUser 
+                ? "lg:col-span-5 w-full" 
+                : "max-w-2xl w-full"
+            } ${activeTab === 'simulator' ? 'block' : 'hidden lg:flex'}`}>
+              <div className={`${cardClass} flex flex-col h-full shadow-2xl overflow-hidden rounded-2xl`}>
+                
+                {/* Telegram Header Mockup */}
+                <div className={`px-4 py-3.5 flex items-center justify-between border-b ${
+                  isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-205'
+                }`}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-md relative">
+                      <DifaBotLogo className="w-8 h-8" />
+                      <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 border-2 border-emerald-500 rounded-full"></span>
+                    </div>
+                    <div>
+                      <h3 className="font-extrabold text-sm flex items-center gap-1.5">
+                        DifaBot Simulator
+                        <span className="bg-emerald-500/10 text-emerald-500 text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">AI</span>
+                      </h3>
+                      <p className="text-[10.5px] text-emerald-500 font-semibold">
+                        {isBotTyping ? 'mengetik...' : 'aktif, siap melayani'}
+                      </p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => {
+                      setSimMessages([
+                        {
+                          id: 'start-2',
+                          sender: 'bot',
+                          text: '👋 *Simulator direset!*\n\nSilakan kirimkan tautan video TikTok atau Instagram Reels untuk memulai proses uji coba.',
+                          timestamp: getFormattedTime(),
+                        }
+                      ]);
+                      addLog('info', 'Simulator chat direset.');
+                    }}
+                    className={`p-1.5 rounded-lg transition ${isDark ? 'hover:bg-slate-800 text-slate-400 hover:text-white' : 'hover:bg-slate-200 text-slate-500 hover:text-slate-850'}`}
+                    title="Reset Obrolan"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Chat Messages Body */}
+                <div className={`flex-1 overflow-y-auto p-4 space-y-4 ${
+                  isDark ? 'bg-slate-950/40' : 'bg-slate-50/50'
+                }`}>
+                  <AnimatePresence initial={false}>
+                    {simMessages.map((msg) => (
+                      <motion.div
+                        key={msg.id}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-md flex flex-col gap-1.5 text-xs leading-relaxed ${
+                          msg.sender === 'user' 
+                            ? 'bg-emerald-500 text-white rounded-tr-none' 
+                            : isDark
+                              ? 'bg-slate-900 border border-slate-800 text-slate-100 rounded-tl-none'
+                              : 'bg-white border border-slate-150 text-slate-850 rounded-tl-none shadow-sm'
+                        }`}>
+                          
+                          {/* Text with markdown bold parsed */}
+                          <div className="whitespace-pre-wrap select-text">
+                            {msg.text.split('\n').map((line, idx) => {
+                              let formattedLine = line;
+                              const boldMatches = formattedLine.match(/\*(.*?)\*/g);
+                              if (boldMatches) {
+                                boldMatches.forEach(m => {
+                                  const clean = m.replace(/\*/g, '');
+                                  formattedLine = formattedLine.replace(m, `<b>${clean}</b>`);
+                                });
+                              }
+                              return <p key={idx} dangerouslySetInnerHTML={{ __html: formattedLine || '&nbsp;' }} />;
+                            })}
+                          </div>
+
+                          {/* OPTION INTERACTIVE BUTTON PANEL */}
+                          {msg.isOptionsPanel && msg.urlHash && (
+                            <div className={`mt-2 pt-2 border-t flex flex-col gap-2 ${borderClass}`}>
+                              <span className="text-[10px] text-emerald-500 font-bold mb-1">PILIH FORMAT PENGIRIMAN:</span>
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                <button
+                                  onClick={() => handleSimulatorFormatChoice('media', msg.urlHash!, msg.id)}
+                                  className="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold py-1.5 px-2.5 rounded-lg text-[10px] transition flex items-center justify-center gap-1 cursor-pointer"
+                                >
+                                  📹 Media
+                                </button>
+                                <button
+                                  onClick={() => handleSimulatorFormatChoice('file', msg.urlHash!, msg.id)}
+                                  className={`font-extrabold py-1.5 px-2.5 rounded-lg text-[10px] transition flex items-center justify-center gap-1 cursor-pointer ${
+                                    isDark ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-750' : 'bg-slate-200 hover:bg-slate-300 text-slate-800 border border-slate-250'
+                                  }`}
+                                >
+                                  📁 Dokumen
+                                </button>
+                                <button
+                                  onClick={() => handleSimulatorFormatChoice('audio', msg.urlHash!, msg.id)}
+                                  className="bg-sky-500 hover:bg-sky-600 text-white font-extrabold py-1.5 px-2.5 rounded-lg text-[10px] transition flex items-center justify-center gap-1 cursor-pointer"
+                                >
+                                  🎵 Audio
+                                </button>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Extracted media preview layout */}
+                          {msg.media && msg.media.success && (
+                            <div className={`mt-2.5 pt-2 border-t flex flex-col gap-3 ${borderClass}`}>
+                              
+                              {/* Slideshow Photo Gallery */}
+                              {(() => {
+                                if (!msg.media || !msg.media.isSlideshow || !msg.media.images || msg.media.images.length === 0) return null;
+                                const images = msg.media.images;
+                                return (
+                                  <div className="flex flex-col gap-2">
+                                    <span className="text-[10px] text-slate-500 font-semibold flex items-center gap-1">
+                                      <ImageIcon className="w-3 h-3 text-emerald-500" /> Galeri Foto TikTok ({images.length} gambar)
+                                    </span>
+                                    <div className={`grid grid-cols-3 gap-1.5 p-2 rounded-xl border ${
+                                      isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-100 border-slate-200'
+                                    }`}>
+                                      {images.slice(0, 6).map((imgUrl: string, idx: number) => (
+                                        <a 
+                                          key={idx} 
+                                          href={imgUrl} 
+                                          target="_blank" 
+                                          rel="noopener noreferrer" 
+                                          className={`relative aspect-square rounded-lg overflow-hidden border hover:opacity-80 transition ${
+                                            isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+                                          }`}
+                                        >
+                                          <img src={imgUrl} alt={`slide ${idx}`} className="object-cover w-full h-full" />
+                                          {idx === 5 && images.length > 6 && (
+                                            <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-[10px] font-bold text-white">
+                                              +{images.length - 6}
+                                            </div>
+                                          )}
+                                        </a>
+                                      ))}
+                                    </div>
+                                  </div>
+                                );
+                              })()}
+
+                              {/* Video Player & Streaming */}
+                              {msg.media.videoUrl && (
+                                <div className="flex flex-col gap-2">
+                                  <span className="text-[10px] text-slate-500 font-semibold flex items-center gap-1">
+                                    <Video className="w-3 h-3 text-emerald-500" /> Pemutar Video
+                                  </span>
+                                  <div className={`relative rounded-xl overflow-hidden border aspect-video bg-black shadow-lg ${
+                                    isDark ? 'border-slate-800' : 'border-slate-200'
+                                  }`}>
+                                    <video 
+                                      src={msg.media.videoUrl} 
+                                      controls 
+                                      preload="metadata" 
+                                      className="w-full h-full"
+                                      poster={msg.media.thumbnail || ''}
+                                    />
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Download Actions */}
+                              <div className="flex flex-wrap gap-2 mt-1">
+                                {msg.media.videoUrl && (
+                                  <a
+                                    href={msg.media.videoUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-1.5 px-3 rounded-lg text-[10px] text-center transition flex items-center justify-center gap-1 shadow"
+                                  >
+                                    <Download className="w-3.5 h-3.5" /> Ambil Berkas
+                                  </a>
+                                )}
+                                {msg.media.audioUrl && (
+                                  <a
+                                    href={msg.media.audioUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`font-bold py-1.5 px-3 rounded-lg text-[10px] text-center transition flex items-center justify-center gap-1 ${
+                                      isDark 
+                                        ? 'bg-slate-800 hover:bg-slate-705 text-slate-300 border border-slate-700/50' 
+                                        : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'
+                                    }`}
+                                  >
+                                    <Music className="w-3.5 h-3.5" /> Audio MP3
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          <span className={`text-[9px] self-end mt-1 ${msg.sender === 'user' ? 'text-emerald-100' : 'text-slate-500'}`}>
+                            {msg.timestamp}
+                          </span>
+                        </div>
+                      </motion.div>
+                    ))}
+
+                    {isBotTyping && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex justify-start"
+                      >
+                        <div className={`rounded-2xl rounded-tl-none px-4 py-3 shadow-sm flex items-center gap-1.5 ${
+                          isDark ? 'bg-slate-900 border border-slate-800 text-slate-300' : 'bg-white border border-slate-150 text-slate-700'
+                        }`}>
+                          <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce"></span>
+                          <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce delay-100"></span>
+                          <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce delay-200"></span>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  <div ref={chatEndRef} />
+                </div>
+
+                {/* Chat Form Footer */}
+                <form onSubmit={sendSimMessage} className={`p-3 flex gap-2 border-t ${
+                  isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-205'
+                }`}>
+                  <input
+                    type="text"
+                    placeholder="Masukkan link TikTok / Instagram, atau ketik pesan..."
+                    value={simInput}
+                    onChange={(e) => setSimInput(e.target.value)}
+                    className={`flex-1 rounded-xl px-4 py-2.5 text-xs transition ${inputClass}`}
+                  />
+                  <button
+                    type="submit"
+                    disabled={!simInput.trim() || isBotTyping}
+                    className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white rounded-xl px-4 py-2.5 flex items-center justify-center transition shadow-md flex-shrink-0 cursor-pointer"
+                  >
+                    <Send className="w-4 h-4" />
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            {/* COLUMN 3: WEB EXTRACTOR & LOG CONSOLE (Right Column - Instant Access) */}
+            <div className={`flex flex-col gap-6 transition-all duration-300 ${
+              currentUser 
+                ? "lg:col-span-3 w-full" 
+                : "max-w-2xl w-full"
+            } ${activeTab === 'downloader' ? 'block' : 'hidden lg:flex'}`}>
+              
+              {/* INSTANT WEB DOWNLOADER CARD */}
+              <section id="instant_downloader_card" className={`${cardClass} p-5 flex flex-col gap-4 shadow-xl transition-all duration-300`}>
+                <div className={`flex items-center gap-2.5 pb-2 border-b ${borderClass}`}>
+                  <Download className="w-5 h-5 text-emerald-500" />
+                  <h2 className="font-bold">Ekstraktor Web</h2>
+                </div>
+                
+                <p className="text-xs text-slate-505 leading-relaxed">
+                  Ekstrak berkas dari link TikTok/Instagram secara langsung di browser Anda:
+                </p>
+
+                <form onSubmit={handleWebDownload} className="flex flex-col gap-3">
+                  <input
+                    type="url"
+                    placeholder="Tempel link video di sini..."
+                    value={downloadInput}
+                    onChange={(e) => setDownloadInput(e.target.value)}
+                    className={`w-full rounded-xl px-3.5 py-2.5 text-xs transition ${inputClass}`}
+                    required
+                  />
+
+                  <button
+                    type="submit"
+                    disabled={downloadLoading}
+                    className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-60 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    {downloadLoading ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Sedang Mengekstrak...
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-3.5 h-3.5" /> Ekstrak Media
+                      </>
+                    )}
+                  </button>
+                </form>
+
+                {/* Downloader Error */}
+                {downloadError && (
+                  <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-xl text-red-500 text-xs flex gap-2">
+                    <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                    <span>{downloadError}</span>
+                  </div>
+                )}
+
+                {/* Web Downloader Result Frame */}
+                {downloadResult && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className={`rounded-xl border p-3.5 flex flex-col gap-3 ${innerCardClass}`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold uppercase ${getMediaSourceColor(downloadResult.source)}`}>
+                        {downloadResult.source}
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-semibold font-mono uppercase">FORMAT: SANGAT LENGKAP</span>
+                    </div>
+
+                    {downloadResult.thumbnail && (
+                      <div className={`relative aspect-video rounded-lg overflow-hidden border ${
+                        isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-205'
+                      }`}>
+                        <img src={downloadResult.thumbnail} alt="cover" className="object-cover w-full h-full" />
+                      </div>
+                    )}
+
+                    <div className="flex flex-col gap-1">
+                      <h4 className={`text-xs font-bold line-clamp-2 leading-snug ${isDark ? 'text-slate-100' : 'text-slate-850'}`}>{downloadResult.title}</h4>
+                      <p className="text-[10px] text-slate-500 font-medium">Pembuat: <span className={`font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{downloadResult.author}</span></p>
+                    </div>
+
+                    {/* Slideshow list if any */}
+                    {downloadResult.isSlideshow && downloadResult.images && downloadResult.images.length > 0 && (
+                      <div className={`flex flex-col gap-1.5 border-t pt-2.5 ${borderClass}`}>
+                        <span className="text-[10px] font-bold text-slate-500">Daftar Foto ({downloadResult.images.length})</span>
+                        <div className="flex gap-2 overflow-x-auto pb-1.5 scrollbar-thin">
+                          {downloadResult.images.map((imgUrl: string, idx: number) => (
+                            <a 
+                              key={idx} 
+                              href={imgUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className={`w-12 h-12 rounded border overflow-hidden flex-shrink-0 hover:opacity-80 transition ${
+                                isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+                              }`}
+                            >
+                              <img src={imgUrl} alt={`slide-${idx}`} className="w-full h-full object-cover" />
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Format based Download Links */}
+                    <div className={`flex flex-col gap-2 mt-1 pt-2.5 border-t ${borderClass}`}>
+                      {downloadResult.videoUrl && (
+                        <a
+                          href={downloadResult.videoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold py-2 px-3 rounded-lg text-xs text-center transition flex items-center justify-center gap-1.5 shadow"
+                        >
+                          <Download className="w-4 h-4" /> Unduh Media Video HD
+                        </a>
+                      )}
+                      
+                      {(downloadResult.videoUrl || (downloadResult.images && downloadResult.images[0])) && (
+                        <a
+                          href={downloadResult.videoUrl || (downloadResult.images && downloadResult.images[0])}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`font-extrabold py-2 px-3 rounded-lg text-xs text-center transition flex items-center justify-center gap-1.5 ${
+                            isDark 
+                              ? 'bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700' 
+                              : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200'
+                          }`}
+                        >
+                          <Download className="w-4 h-4" /> Unduh Berkas Asli (Dokumen)
+                        </a>
+                      )}
+
+                      {(downloadResult.audioUrl || downloadResult.videoUrl) && (
+                        <a
+                          href={downloadResult.audioUrl || downloadResult.videoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-sky-500 hover:bg-sky-600 text-white font-extrabold py-2 px-3 rounded-lg text-xs text-center transition flex items-center justify-center gap-1.5 shadow"
+                        >
+                          <Music className="w-3.5 h-3.5" /> Unduh Format MP3 Audio
+                        </a>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </section>
+
+              {/* PLATFORMS & FUTURE ADDITIONS CARD */}
+              <section id="platforms_status_card" className={`${cardClass} p-5 flex flex-col gap-3 shadow-xl transition-all duration-300`}>
+                <div className={`flex items-center gap-2.5 pb-2 border-b ${borderClass}`}>
+                  <Layers className="w-5 h-5 text-emerald-500" />
+                  <h2 className="font-bold">Layanan Ekstraksi</h2>
+                </div>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  DifaBot mendukung ekstraksi tanpa watermark untuk seluruh media sosial utama di bawah ini secara instan:
+                </p>
+                <div className="grid grid-cols-2 gap-2 mt-1">
+                  <div className={`p-2 rounded-xl flex items-center justify-between text-[11px] font-semibold ${innerCardClass}`}>
+                    <span className="flex items-center gap-1.5 text-emerald-500">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                      TikTok
+                    </span>
+                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-500 font-extrabold">Aktif</span>
+                  </div>
+                  <div className={`p-2 rounded-xl flex items-center justify-between text-[11px] font-semibold ${innerCardClass}`}>
+                    <span className="flex items-center gap-1.5 text-pink-500">
+                      <span className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse"></span>
+                      Instagram
+                    </span>
+                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-500 font-extrabold">Aktif</span>
+                  </div>
+                  <div className={`p-2 rounded-xl flex items-center justify-between text-[11px] font-semibold ${innerCardClass}`}>
+                    <span className="flex items-center gap-1.5 text-red-500">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                      YouTube
+                    </span>
+                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-500 font-extrabold">Aktif</span>
+                  </div>
+                  <div className={`p-2 rounded-xl flex items-center justify-between text-[11px] font-semibold ${innerCardClass}`}>
+                    <span className="flex items-center gap-1.5 text-sky-400">
+                      <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse"></span>
+                      Twitter / X
+                    </span>
+                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-500 font-extrabold">Aktif</span>
+                  </div>
+                  <div className={`p-2 rounded-xl flex items-center justify-between text-[11px] font-semibold ${innerCardClass} col-span-2`}>
+                    <span className="flex items-center gap-1.5 text-indigo-400">
+                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
+                      Facebook Video & Reels
+                    </span>
+                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-500 font-extrabold">Aktif</span>
+                  </div>
+                </div>
+              </section>
+
+              {/* BREAKING NEWS / BERITA TERKINI CARD */}
+              <section id="breaking_news_card" className={`${cardClass} p-5 flex flex-col gap-3.5 shadow-xl transition-all duration-300`}>
+                <div className={`flex items-center justify-between pb-2 border-b ${borderClass}`}>
+                  <div className="flex items-center gap-2.5">
+                    <Newspaper className="w-5 h-5 text-emerald-500" />
+                    <h2 className="font-bold">Breaking News / Berita Terkini</h2>
+                  </div>
+                  <button 
+                    onClick={fetchNews} 
+                    disabled={newsLoading}
+                    type="button"
+                    className="p-1.5 rounded-lg transition hover:bg-emerald-500/10 text-emerald-500 cursor-pointer"
+                    title="Segarkan Berita"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${newsLoading ? 'animate-spin' : ''}`} />
+                  </button>
+                </div>
+
+                <p className="text-[10.5px] text-slate-500 leading-relaxed -mt-1">
+                  Pantau perkembangan teknologi, AI, dan berita terkini di Indonesia secara real-time:
+                </p>
+
+                {newsLoading ? (
+                  <div className="flex flex-col items-center justify-center py-6 gap-2">
+                    <RefreshCw className="w-6 h-6 text-emerald-500 animate-spin" />
+                    <span className="text-[10px] text-slate-500 font-bold animate-pulse">Memuat berita hangat...</span>
+                  </div>
+                ) : newsError ? (
+                  <div className="text-[10.5px] text-red-500 text-center py-4 font-semibold">
+                    {newsError}
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2.5 max-h-[250px] overflow-y-auto scrollbar-thin pr-1">
+                    {newsList.map((item, idx) => (
+                      <a 
+                        key={idx} 
+                        href={item.link !== '#' ? item.link : undefined}
+                        target={item.link !== '#' ? "_blank" : undefined}
+                        rel="noopener noreferrer"
+                        className={`group p-2 rounded-xl flex gap-2.5 transition hover:scale-[1.01] ${innerCardClass} ${
+                          item.link !== '#' ? 'cursor-pointer' : ''
+                        }`}
+                      >
+                        <div className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-slate-800">
+                          <img 
+                            src={item.imageUrl} 
+                            alt="news-thumbnail" 
+                            className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                            referrerPolicy="no-referrer"
+                          />
+                        </div>
+                        <div className="min-w-0 flex-1 flex flex-col justify-between">
+                          <div>
+                            <h4 className={`text-[10.5px] font-bold leading-snug line-clamp-2 transition ${
+                              isDark ? 'group-hover:text-emerald-400 text-slate-100' : 'group-hover:text-emerald-600 text-slate-850'
+                            }`}>
+                              {item.title}
+                            </h4>
+                            <p className="text-[9.5px] text-slate-400 line-clamp-1 mt-0.5">{item.description}</p>
+                          </div>
+                          <div className="flex items-center justify-between text-[8.5px] text-slate-500 font-bold mt-1 uppercase tracking-wider">
+                            <span className="truncate max-w-[100px]">{item.creator}</span>
+                            <span>{item.pubDate}</span>
+                          </div>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </section>
+
+              {/* EVENT LOG CONSOLE CARD */}
+              <section id="logs_card" className={`${cardClass} p-5 flex flex-col gap-3 shadow-xl transition-all duration-300`}>
+                <div className={`flex items-center gap-2.5 pb-2 border-b ${borderClass}`}>
+                  <FileText className="w-5 h-5 text-emerald-500" />
+                  <h2 className="font-bold">Log Konsol Aktivitas</h2>
+                </div>
+                
+                <div className={`p-3 rounded-xl h-36 overflow-y-auto flex flex-col gap-2 font-mono text-[9px] leading-relaxed scrollbar-thin ${innerCardClass}`}>
+                  {botStatusLogs.length === 0 ? (
+                    <span className="text-slate-500 text-center italic mt-10 block">Belum ada aktivitas terekam.</span>
+                  ) : (
+                    botStatusLogs.map((log) => (
+                      <div key={log.id} className="flex items-start gap-1.5 border-b border-black/5 dark:border-white/5 pb-1.5">
+                        <span className="text-slate-500 shrink-0 font-sans">{log.time}</span>
+                        <span className={`font-bold shrink-0 ${
+                          log.type === 'success' ? 'text-emerald-500' :
+                          log.type === 'error' ? 'text-red-500' :
+                          log.type === 'warning' ? 'text-yellow-500' :
+                          'text-sky-500'
+                        }`}>
+                          [{log.type.toUpperCase()}]
+                        </span>
+                        <span className={isDark ? 'text-slate-300 break-all' : 'text-slate-700 break-all'}>{log.message}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </section>
+            </div>
+          </motion.main>
+        )}
+      </AnimatePresence>
+
+      {/* FOOTER */}
+      <footer id="app_footer" className={`border-t py-4 px-4 mt-auto transition-colors duration-300 ${
+        isDark ? 'bg-slate-950 border-slate-900 text-slate-500' : 'bg-slate-100 border-slate-200 text-slate-500'
+      }`}>
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-[10.5px]">
+          <span className="font-medium">DifaBot Dashboard © 2026. Semua Hak Dilindungi.</span>
+          <div className="flex gap-4">
+            <span className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> 
+              JSONBin Database Synchronized
+            </span>
+            <span>Didukung oleh API Gemini & Cobalt Engine</span>
+          </div>
+        </div>
+      </footer>
+
+      {/* FLOATING ANIMATED TOAST NOTIFICATIONS */}
+      <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-[90%] sm:w-full pointer-events-none">
+        <AnimatePresence>
+          {notifications.map((notif) => (
+            <motion.div
+              key={notif.id}
+              layout
+              initial={{ opacity: 0, y: 50, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.85, transition: { duration: 0.2 } }}
+              className={`pointer-events-auto p-3.5 rounded-xl border shadow-xl flex items-start gap-3 transition-colors ${
+                notif.type === 'success' 
+                  ? 'bg-slate-900/95 border-emerald-500/30 text-emerald-400 dark:bg-slate-950/95 shadow-emerald-500/5' 
+                  : notif.type === 'error'
+                    ? 'bg-slate-900/95 border-red-500/30 text-red-400 dark:bg-slate-950/95 shadow-red-500/5'
+                    : notif.type === 'warning'
+                      ? 'bg-slate-900/95 border-amber-500/30 text-amber-400 dark:bg-slate-950/95 shadow-amber-500/5'
+                      : 'bg-slate-900/95 border-slate-800 text-slate-200 dark:bg-slate-950/95'
+              }`}
+            >
+              {notif.type === 'success' && <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-500 mt-0.5" />}
+              {notif.type === 'error' && <XCircle className="w-4 h-4 flex-shrink-0 text-red-500 mt-0.5" />}
+              {notif.type === 'warning' && <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-500 mt-0.5" />}
+              {notif.type === 'info' && <Sparkles className="w-4 h-4 flex-shrink-0 text-sky-400 mt-0.5" />}
+              
+              <div className="flex-1 text-xs font-semibold leading-relaxed">
+                {notif.message}
+              </div>
+              
+              <button 
+                onClick={() => setNotifications(prev => prev.filter(n => n.id !== notif.id))}
+                className="text-slate-400 hover:text-slate-200 cursor-pointer transition shrink-0 mt-0.5"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
