@@ -118,7 +118,7 @@ export async function getLatestNews(): Promise<NewsItem[]> {
         const ai = new GoogleGenAI({ apiKey });
         const geminiRes = await ai.models.generateContent({
           model: 'gemini-3.5-flash',
-          contents: 'Buatkan 5 berita terkini fiktif namun sangat relevan tentang perkembangan AI, teknologi, dan startup digital di Indonesia dalam format JSON. Format output harus berupa JSON murni dengan property "news" yang isinya array of object, tiap object memiliki fields: "title" (string), "description" (string, max 150 chars), "pubDate" (string tanggal hari ini), "imageUrl" (string url picsum.photos/seed/tech/400/250), "creator" (string portal berita teknologi lokal seperti DifaTech News). JANGAN tulis markdown tag ```json di output, langsung JSON murninya saja.',
+          contents: 'Buatkan 5 berita terkini fiktif namun sangat relevan tentang perkembangan AI, teknologi, dan startup digital di Indonesia dalam format JSON. Format output harus berupa JSON murni dengan property "news" yang isinya array of object, tiap object memiliki fields: "title" (string), "description" (string, max 150 chars), "pubDate" (string tanggal hari ini), "imageUrl" (string url picsum.photos/seed/tech/400/250), "creator" (string portal berita teknologi lokal seperti ChonixTech News). JANGAN tulis markdown tag ```json di output, langsung JSON murninya saja.',
         });
 
         const text = geminiRes.text || '';
@@ -135,11 +135,11 @@ export async function getLatestNews(): Promise<NewsItem[]> {
     // Static fallback if everything else fails
     return [
       {
-        title: 'DifaBot Premium v2.0 Resmi Dirilis di Indonesia',
+        title: 'Chonix Bot Premium v2.0 Resmi Dirilis di Indonesia',
         description: 'Dashboard manajemen bot telegram ini kini mendukung download dari seluruh media sosial utama, dilengkapi chatbot AI pintar dan feed berita langsung.',
         pubDate: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
-        imageUrl: 'https://picsum.photos/seed/difabot/400/250',
-        creator: 'DifaTech Media',
+        imageUrl: 'https://picsum.photos/seed/chonixbot/400/250',
+        creator: 'ChonixTech Media',
         link: '#',
       },
       {

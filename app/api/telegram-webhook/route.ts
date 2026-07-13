@@ -444,7 +444,7 @@ async function generateGeminiReply(message: string, customPrompt?: string): Prom
     
     const systemInstruction = customPrompt && customPrompt.trim() 
       ? customPrompt 
-      : `Kamu adalah "DifaBot", bot Telegram pintar pengunduh semua media sosial (TikTok, Instagram, YouTube, Twitter/X, Facebook) tanpa watermark bertenaga AI Gemini.
+      : `Kamu adalah "Chonix Bot", bot Telegram pintar pengunduh semua media sosial (TikTok, Instagram, YouTube, Twitter/X, Facebook) tanpa watermark bertenaga AI Gemini.
 Tugas utama kamu adalah membantu pengguna mengunduh video, audio, dan foto.
 Jika pengguna mengirim pesan biasa (bukan link), jawab dengan ramah, lucu, dan santai dalam bahasa Indonesia. 
 Sebutkan bahwa mereka cukup mengirimkan link video sosial media, dan bot akan langsung mengirimkan medianya kembali!
@@ -631,7 +631,7 @@ export async function POST(request: Request) {
 
             // Get Bot Username dynamically using token
             let botUsername = callbackQuery.message?.from?.username;
-            if (!botUsername || botUsername.toLowerCase() === 'difabot' || botUsername.toLowerCase() === 'unduhbot') {
+            if (!botUsername || botUsername.toLowerCase() === 'chonixbot' || botUsername.toLowerCase() === 'unduhbot') {
               try {
                 const botMeRes = await fetch(`https://api.telegram.org/bot${token}/getMe`);
                 const botMeJson = await botMeRes.json();
@@ -643,7 +643,7 @@ export async function POST(request: Request) {
               }
             }
             if (!botUsername) {
-              botUsername = 'DifaBot';
+              botUsername = 'ChonixBot';
             }
 
             const formatName = selectedFormat === 'fmt_file' 
@@ -1080,7 +1080,7 @@ export async function POST(request: Request) {
             }
 
             // Get bot username
-            let botUsername = 'DifaBot';
+            let botUsername = 'ChonixBot';
             try {
               const botMeRes = await fetch(`https://api.telegram.org/bot${token}/getMe`);
               const botMeJson = await botMeRes.json();
@@ -1308,8 +1308,8 @@ export async function POST(request: Request) {
     // -------------------------------------------------------------------------
     if (lowerMessageText === '/menu' || lowerMessageText === '/help' || lowerMessageText === 'menu' || lowerMessageText === 'help' || lowerMessageText.startsWith('/start')) {
       const isOwner = user && user.telegramOwnerId && chatId.toString() === user.telegramOwnerId.trim();
-      let menuText = `🤖 *DifaBot Command Menu / Bantuan* 🤖\n\n` +
-        `Halo! Saya adalah *DifaBot*, asisten otomatis multi-platform Anda. Berikut adalah menu layanan dan perintah yang dapat saya jalankan:\n\n` +
+      let menuText = `🤖 *Chonix Bot Command Menu / Bantuan* 🤖\n\n` +
+        `Halo! Saya adalah *Chonix Bot*, asisten otomatis multi-platform Anda. Berikut adalah menu layanan dan perintah yang dapat saya jalankan:\n\n` +
         `📹 *Download Media (Tanpa Watermark):*\n` +
         `• *Instagram:* \`/ig <link>\` atau \`/instagram <link>\` (atau kirim link langsung)\n` +
         `• *TikTok:* \`/tt <link>\` atau \`/tiktok <link>\` (atau kirim link langsung)\n` +

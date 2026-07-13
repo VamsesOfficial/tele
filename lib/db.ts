@@ -31,7 +31,7 @@ let inMemoryUsers: UserAccount[] = [
     chatbotPrompt: '',
     customAutoReplies: [
       { keyword: 'halo', reply: 'Halo juga! Ada yang bisa dibantu? Kirimkan saja link sosmed untuk saya download!' },
-      { keyword: 'price', reply: 'Bot DifaBot ini 100% gratis digunakan tanpa biaya apapun!' }
+      { keyword: 'price', reply: 'Bot Chonix Bot ini 100% gratis digunakan tanpa biaya apapun!' }
     ],
     createdAt: new Date().toISOString(),
   }

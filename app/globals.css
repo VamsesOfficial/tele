@@ -1,1 +1,38 @@
 @import "tailwindcss";
+
+:root {
+  --ios-blue: #0a84ff;
+  --ios-indigo: #5e5ce6;
+  --ios-radius-lg: 22px;
+}
+
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overscroll-behavior-y: none;
+}
+
+/* iOS-style slim scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(120, 120, 128, 0.35) transparent;
+}
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(120, 120, 128, 0.35);
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Smooth iOS-like tap feedback, no ugly blue flash on mobile */
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}

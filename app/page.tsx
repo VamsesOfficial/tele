@@ -43,46 +43,49 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-// DifaBot Vector SVG Logo Component matching user upload
-function DifaBotLogo({ className = "w-10 h-10" }: { className?: string }) {
+// Chonix Bot — iOS-style squircle app-icon mark
+function ChonixBotLogo({ className = "w-10 h-10" }: { className?: string }) {
   return (
-    <svg 
-      viewBox="0 0 100 100" 
-      className={className} 
-      fill="none" 
+    <svg
+      viewBox="0 0 100 100"
+      className={className}
+      fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* Background soft glowing circle gradient */}
-      <circle cx="50" cy="50" r="46" fill="url(#difaGreenGrad)" />
-      
-      {/* Speech bubble tail tail (matching bottom tail) */}
-      <path d="M42 85 Q50 94 58 85 Z" fill="#10b981" />
-      
-      {/* White Robot Head */}
-      <rect x="25" y="28" width="50" height="42" rx="21" fill="white" />
-      
-      {/* Side headphone-style ear pads */}
-      <rect x="20" y="40" width="6" height="18" rx="3" fill="white" />
-      <rect x="74" y="40" width="6" height="18" rx="3" fill="white" />
-      
-      {/* Antenna with tiny circle on top */}
-      <rect x="48" y="15" width="4" height="14" fill="white" />
-      <circle cx="50" cy="13" r="5" fill="white" />
-      
-      {/* Dark inner eye screen */}
-      <rect x="32" y="38" width="36" height="22" rx="11" fill="#043c2c" />
-      
-      {/* Friendly smiling curved green eyes */}
-      <path d="M38 48 Q41 44 44 48" stroke="#34d399" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-      <path d="M56 48 Q59 44 62 48" stroke="#34d399" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-      
-      {/* Cheerful curved green mouth */}
-      <path d="M46 53 Q50 56 54 53" stroke="#34d399" strokeWidth="2" strokeLinecap="round" fill="none" />
-      
+      {/* iOS-style superellipse (squircle) app icon background */}
+      <path
+        d="M50 4C14 4 4 14 4 50s10 46 46 46 46-10 46-46S86 4 50 4Z"
+        fill="url(#chonixBlueGrad)"
+      />
+
+      {/* Soft inner top highlight, iOS glass sheen */}
+      <path
+        d="M50 4C14 4 4 14 4 50c0-14 6-26 16-32 8-5 18-8 30-8 12 0 22 3 30 8 10 6 16 18 16 32C96 14 86 4 50 4Z"
+        fill="white"
+        opacity="0.08"
+      />
+
+      {/* Chat bubble */}
+      <path
+        d="M50 24c-14.4 0-26 10.1-26 22.6 0 7.3 4 13.8 10.3 17.9-.4 3-1.7 6.9-4.6 10.4a1 1 0 0 0 .9 1.6c5.4-.7 10-3 13.2-5.3 2 .3 4.1.5 6.2.5 14.4 0 26-10.1 26-22.6S64.4 24 50 24Z"
+        fill="white"
+      />
+
+      {/* Spark / bolt mark inside bubble */}
+      <path
+        d="M53.5 34.5 40 51h8.4l-2.1 14.5L61 48h-8.6l1.1-13.5Z"
+        fill="url(#chonixBoltGrad)"
+      />
+
       <defs>
-        <linearGradient id="difaGreenGrad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#22c55e" />
-          <stop stopColor="#10b981" />
+        <linearGradient id="chonixBlueGrad" x1="4" y1="4" x2="96" y2="96" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#5AC8FA" />
+          <stop offset="0.5" stopColor="#0A84FF" />
+          <stop offset="1" stopColor="#5E5CE6" />
+        </linearGradient>
+        <linearGradient id="chonixBoltGrad" x1="40" y1="34.5" x2="61" y2="65.5" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#0A84FF" />
+          <stop offset="1" stopColor="#5E5CE6" />
         </linearGradient>
       </defs>
     </svg>
@@ -298,7 +301,7 @@ export default function Home() {
     {
       id: 'start-1',
       sender: 'bot',
-      text: '👋 *Halo! Selamat datang di Simulator Telegram!*\n\nSaya adalah bot otomatis *DifaBot* bertenaga AI Gemini.\n\nKirimkan saya tautan media dari *TikTok*, *Instagram*, *YouTube*, *Twitter/X*, atau *Facebook*. Saya akan mengunduhnya untuk Anda tanpa watermark!\n\n💡 _Ketik \`/menu\` atau \`/help\` untuk melihat daftar lengkap perintah yang saya dukung!_',
+      text: '👋 *Halo! Selamat datang di Simulator Telegram!*\n\nSaya adalah bot otomatis *Chonix Bot* bertenaga AI Gemini.\n\nKirimkan saya tautan media dari *TikTok*, *Instagram*, *YouTube*, *Twitter/X*, atau *Facebook*. Saya akan mengunduhnya untuk Anda tanpa watermark!\n\n💡 _Ketik \`/menu\` atau \`/help\` untuk melihat daftar lengkap perintah yang saya dukung!_',
       timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
     }
   ]);
@@ -829,8 +832,8 @@ export default function Home() {
         setSimMessages(prev => [...prev, {
           id: Math.random().toString(36).substring(7),
           sender: 'bot',
-          text: `🤖 *DifaBot Command Menu / Bantuan* 🤖\n\n` +
-                `Halo! Saya adalah *DifaBot*, asisten otomatis multi-platform Anda. Berikut adalah menu layanan dan perintah yang dapat saya jalankan:\n\n` +
+          text: `🤖 *Chonix Bot Command Menu / Bantuan* 🤖\n\n` +
+                `Halo! Saya adalah *Chonix Bot*, asisten otomatis multi-platform Anda. Berikut adalah menu layanan dan perintah yang dapat saya jalankan:\n\n` +
                 `📹 *Download Media (Tanpa Watermark):*\n` +
                 `• *Instagram:* \`/ig <link>\` atau \`/instagram <link>\` (atau kirim link langsung)\n` +
                 `• *TikTok:* \`/tt <link>\` atau \`/tiktok <link>\` (atau kirim link langsung)\n` +
@@ -1133,7 +1136,7 @@ export default function Home() {
       case 'tiktok': return 'bg-black text-white border border-slate-700';
       case 'instagram': return 'bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 text-white';
       case 'youtube': return 'bg-red-600 text-white';
-      case 'twitter': return 'bg-sky-500 text-white';
+      case 'twitter': return 'bg-indigo-500 text-white';
       case 'facebook': return 'bg-indigo-600 text-white';
       default: return 'bg-slate-600 text-white';
     }
@@ -1143,7 +1146,7 @@ export default function Home() {
 
   // Theme-adaptive classes
   const cardClass = isDark 
-    ? "bg-slate-900/60 backdrop-blur-xl border border-slate-850/80 text-slate-100" 
+    ? "bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 text-slate-100" 
     : "bg-white border border-slate-200/80 text-slate-800 shadow-sm";
     
   const innerCardClass = isDark 
@@ -1152,21 +1155,21 @@ export default function Home() {
     
   const borderClass = isDark 
     ? "border-slate-800/80" 
-    : "border-slate-150";
+    : "border-slate-100";
     
   const labelClass = isDark 
     ? "text-slate-400" 
     : "text-slate-500";
     
   const inputClass = isDark 
-    ? "bg-slate-950/80 border border-slate-800 focus:border-emerald-500 text-slate-100 focus:ring-1 focus:ring-emerald-500" 
-    : "bg-slate-50 border border-slate-200 focus:border-emerald-500 text-slate-800 focus:ring-1 focus:ring-emerald-500";
+    ? "bg-slate-950/80 border border-slate-800 focus:border-blue-500 text-slate-100 focus:ring-1 focus:ring-blue-500" 
+    : "bg-slate-50 border border-slate-200 focus:border-blue-500 text-slate-800 focus:ring-1 focus:ring-blue-500";
 
   if (!mounted) {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center font-sans">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
           <p className="text-xs text-slate-400 font-medium animate-pulse">Memuat aplikasi...</p>
         </div>
       </div>
@@ -1174,32 +1177,32 @@ export default function Home() {
   }
 
   return (
-    <div id="main_container" className={`min-h-screen flex flex-col font-sans selection:bg-emerald-500 selection:text-white transition-colors duration-300 ${
+    <div id="main_container" className={`min-h-screen flex flex-col font-sans selection:bg-blue-500 selection:text-white transition-colors duration-300 ${
       isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
     }`}>
       
       {/* GLOW DECORATIONS */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-sky-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
       <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
 
-      {/* HEADER SECTION */}
-      <header id="app_header" className={`border-b backdrop-blur-md sticky top-0 z-40 px-4 py-3 transition-colors duration-300 ${
-        isDark ? 'border-slate-800/80 bg-slate-900/40 text-slate-100' : 'border-slate-200 bg-white/80 text-slate-900 shadow-sm'
+      {/* HEADER SECTION — iOS translucent navigation bar */}
+      <header id="app_header" className={`border-b backdrop-blur-xl sticky top-0 z-40 px-4 py-3 transition-colors duration-300 ${
+        isDark ? 'border-slate-800/60 bg-slate-900/60 text-slate-100' : 'border-slate-200/70 bg-white/70 text-slate-900'
       }`}>
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-1 bg-emerald-500/10 border border-emerald-500/20 rounded-xl shadow-lg">
-              <DifaBotLogo className="w-9 h-9" />
+            <div className="rounded-[20px] shadow-lg shadow-indigo-500/10">
+              <ChonixBotLogo className="w-10 h-10" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 via-emerald-250 to-teal-300 bg-clip-text text-transparent">
-                  DifaBot Premium
+                <h1 className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-blue-400 via-indigo-300 to-violet-300 bg-clip-text text-transparent">
+                  Chonix Bot
                 </h1>
-                <span className="bg-gradient-to-r from-emerald-500 to-teal-500 text-[10px] font-black px-2 py-0.5 rounded-full uppercase shadow text-white">v2.0</span>
+                <span className="bg-gradient-to-r from-blue-500 to-violet-500 text-[10px] font-black px-2 py-0.5 rounded-full uppercase shadow text-white">v2.0</span>
               </div>
               <p className={`text-xs font-medium hidden sm:block ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                Telegram Multi-Client Bot Manager with TikTok & Instagram watermarks-free extractors
+                Telegram Multi-Client Bot Manager with TikTok & Instagram watermark-free extractors
               </p>
             </div>
           </div>
@@ -1207,12 +1210,12 @@ export default function Home() {
           {/* Main Controls Header */}
           <div className="flex items-center gap-3 w-full md:w-auto justify-center md:justify-end">
             {currentUser && (
-              <div className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-colors duration-300 ${
+              <div className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full border transition-colors duration-300 ${
                 isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-slate-100 border-slate-200'
               }`}>
-                <User className="w-3.5 h-3.5 text-sky-450" />
+                <User className="w-3.5 h-3.5 text-indigo-400" />
                 <span className={`text-xs font-bold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{currentUser.username}</span>
-                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span>
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-ping"></span>
               </div>
             )}
 
@@ -1220,7 +1223,7 @@ export default function Home() {
             <button
               id="theme_toggle_btn"
               onClick={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')}
-              className={`p-2 rounded-xl border transition-all duration-300 cursor-pointer flex-shrink-0 ${
+              className={`p-2 rounded-full border transition-all duration-300 cursor-pointer flex-shrink-0 ${
                 isDark 
                   ? 'bg-slate-900/80 border-slate-800 text-amber-400 hover:text-amber-300 hover:bg-slate-800' 
                   : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 shadow-sm'
@@ -1231,19 +1234,19 @@ export default function Home() {
               {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
 
-            {/* Navigation Tabs - Only show when logged in */}
+            {/* Navigation Tabs - iOS segmented control - Only show when logged in */}
             {currentUser && (
-              <div className={`flex p-1 rounded-xl border transition-colors duration-300 w-full md:w-auto ${
-                isDark ? 'bg-slate-900/90 border-slate-800/80' : 'bg-slate-100 border-slate-200 shadow-inner'
+              <div className={`flex p-1 rounded-full border transition-colors duration-300 w-full md:w-auto ${
+                isDark ? 'bg-slate-800/60 border-slate-800/60' : 'bg-slate-200/70 border-slate-200/70'
               }`}>
                 <button
                   onClick={() => setActiveTab('manager')}
-                  className={`flex-1 md:flex-none px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[10.5px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                  className={`flex-1 md:flex-none px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10.5px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap ${
                     activeTab === 'manager' 
-                      ? 'bg-sky-500 text-white shadow-md' 
+                      ? (isDark ? 'bg-slate-600/90 text-white shadow' : 'bg-white text-slate-900 shadow')
                       : isDark 
-                        ? 'text-slate-400 hover:text-white hover:bg-slate-800/40' 
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                        ? 'text-slate-400 hover:text-white' 
+                        : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   <Settings className="w-3.5 h-3.5" />
@@ -1252,12 +1255,12 @@ export default function Home() {
                 </button>
                 <button
                   onClick={() => setActiveTab('simulator')}
-                  className={`flex-1 md:flex-none px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[10.5px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                  className={`flex-1 md:flex-none px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10.5px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap ${
                     activeTab === 'simulator' 
-                      ? 'bg-sky-500 text-white shadow-md' 
+                      ? (isDark ? 'bg-slate-600/90 text-white shadow' : 'bg-white text-slate-900 shadow')
                       : isDark 
-                        ? 'text-slate-400 hover:text-white hover:bg-slate-800/40' 
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                        ? 'text-slate-400 hover:text-white' 
+                        : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   <Send className="w-3.5 h-3.5" />
@@ -1266,12 +1269,12 @@ export default function Home() {
                 </button>
                 <button
                   onClick={() => setActiveTab('downloader')}
-                  className={`flex-1 md:flex-none px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[10.5px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                  className={`flex-1 md:flex-none px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10.5px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap ${
                     activeTab === 'downloader' 
-                      ? 'bg-sky-500 text-white shadow-md' 
+                      ? (isDark ? 'bg-slate-600/90 text-white shadow' : 'bg-white text-slate-900 shadow')
                       : isDark 
-                        ? 'text-slate-400 hover:text-white hover:bg-slate-800/40' 
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                        ? 'text-slate-400 hover:text-white' 
+                        : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   <Download className="w-3.5 h-3.5" />
@@ -1295,13 +1298,11 @@ export default function Home() {
           >
             <div className={`${cardClass} p-6 sm:p-8 rounded-3xl w-full max-w-md shadow-2xl relative flex flex-col gap-6 transition-all duration-300`}>
               
-              <div className="absolute top-0 right-0 w-32 h-32 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
               <div className="flex flex-col items-center text-center gap-2">
-                <div className={`p-3 rounded-2xl border transition-colors ${
-                  isDark ? 'bg-slate-950 border-slate-800 text-sky-400' : 'bg-slate-100 border-slate-200 text-sky-600 shadow-sm'
-                }`}>
-                  <Bot className="w-8 h-8 animate-bounce" />
+                <div className="animate-bounce drop-shadow-lg">
+                  <ChonixBotLogo className="w-16 h-16" />
                 </div>
                 <h2 className={`text-xl font-extrabold tracking-tight transition-colors ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>
                   {authMode === 'login' ? 'Masuk ke Akun Anda' : 'Daftar Akun Baru'}
@@ -1314,14 +1315,14 @@ export default function Home() {
               </div>
 
               {authError && (
-                <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-xl text-red-400 text-xs flex gap-2">
+                <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-2xl text-red-400 text-xs flex gap-2">
                   <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                   <span>{authError}</span>
                 </div>
               )}
 
               {authSuccess && (
-                <div className="bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-xl text-emerald-400 text-xs flex gap-2">
+                <div className="bg-blue-500/10 border border-blue-500/20 p-3 rounded-2xl text-blue-400 text-xs flex gap-2">
                   <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" />
                   <span>{authSuccess}</span>
                 </div>
@@ -1337,10 +1338,10 @@ export default function Home() {
                     placeholder="Masukkan username Anda..."
                     value={authUsername}
                     onChange={(e) => setAuthUsername(e.target.value)}
-                    className={`w-full rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/40 transition ${
+                    className={`w-full rounded-2xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition ${
                       isDark 
                         ? 'bg-slate-950 border border-slate-800 text-slate-200 placeholder:text-slate-600' 
-                        : 'bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-450'
+                        : 'bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400'
                     }`}
                     required
                   />
@@ -1355,10 +1356,10 @@ export default function Home() {
                     placeholder="Masukkan password Anda..."
                     value={authPassword}
                     onChange={(e) => setAuthPassword(e.target.value)}
-                    className={`w-full rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/40 transition ${
+                    className={`w-full rounded-2xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition ${
                       isDark 
                         ? 'bg-slate-950 border border-slate-800 text-slate-200 placeholder:text-slate-600' 
-                        : 'bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-450'
+                        : 'bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400'
                     }`}
                     required
                   />
@@ -1367,7 +1368,7 @@ export default function Home() {
                 <button
                   type="submit"
                   disabled={authLoading}
-                  className="w-full bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 font-extrabold text-white py-3 rounded-xl text-xs transition shadow-lg shadow-sky-500/10 flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 font-extrabold text-white py-3 rounded-2xl text-xs transition shadow-lg shadow-indigo-500/10 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {authLoading ? (
                     <RefreshCw className="w-4 h-4 animate-spin" />
@@ -1390,7 +1391,7 @@ export default function Home() {
                     setAuthError('');
                     setAuthSuccess('');
                   }}
-                  className="text-xs text-sky-500 hover:text-sky-600 font-bold transition cursor-pointer"
+                  className="text-xs text-indigo-500 hover:text-indigo-600 font-bold transition cursor-pointer"
                 >
                   {authMode === 'login' ? 'Belum punya akun? Daftar di sini' : 'Sudah punya akun? Masuk di sini'}
                 </button>
@@ -1418,7 +1419,7 @@ export default function Home() {
                 <section id="bot_connector_card" className={`${cardClass} p-5 flex flex-col gap-4 transition-all duration-300`}>
                   <div className={`flex items-center justify-between pb-2 border-b ${borderClass}`}>
                     <div className="flex items-center gap-2.5">
-                      <Settings className="w-5 h-5 text-emerald-500" />
+                      <Settings className="w-5 h-5 text-blue-500" />
                       <h2 className="font-bold">Pengaturan Bot Klien</h2>
                     </div>
                     <button 
@@ -1431,38 +1432,38 @@ export default function Home() {
                     </button>
                   </div>
 
-                  <div className={`p-3 rounded-xl text-[11px] flex flex-col gap-1 leading-relaxed ${innerCardClass}`}>
-                    <span className="font-bold text-emerald-500 flex items-center gap-1">
+                  <div className={`p-3 rounded-2xl text-[11px] flex flex-col gap-1 leading-relaxed ${innerCardClass}`}>
+                    <span className="font-bold text-blue-500 flex items-center gap-1">
                       <Sparkles className="w-3 h-3" /> Dashboard Client: <span className={isDark ? 'text-slate-200' : 'text-slate-800'}>{currentUser.username}</span>
                     </span>
-                    <span className={isDark ? 'text-slate-450' : 'text-slate-600'}>Anda bisa meluncurkan satu unit bot pengunduh khusus untuk Anda sendiri yang terhubung langsung ke server media kami.</span>
+                    <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>Anda bisa meluncurkan satu unit bot pengunduh khusus untuk Anda sendiri yang terhubung langsung ke server media kami.</span>
                   </div>
 
                   {/* Input Token */}
                   <div className="flex flex-col gap-1.5">
                     <label className={`text-xs font-semibold flex items-center gap-1.5 ${labelClass}`}>
-                      <Key className="w-3.5 h-3.5 text-emerald-500" /> Kunci Bot Token (Telegram API)
+                      <Key className="w-3.5 h-3.5 text-blue-500" /> Kunci Bot Token (Telegram API)
                     </label>
                     <input
                       type="password"
                       placeholder="Masukkan token dari @BotFather..."
                       value={botToken}
                       onChange={(e) => setBotToken(e.target.value)}
-                      className={`w-full rounded-xl px-3.5 py-2.5 text-xs transition ${inputClass}`}
+                      className={`w-full rounded-2xl px-3.5 py-2.5 text-xs transition ${inputClass}`}
                     />
                   </div>
 
                   {/* Input Telegram Owner ID */}
                   <div className="flex flex-col gap-1.5">
                     <label className={`text-xs font-semibold flex items-center gap-1.5 ${labelClass}`}>
-                      <User className="w-3.5 h-3.5 text-emerald-500" /> ID Telegram Owner (Opsional)
+                      <User className="w-3.5 h-3.5 text-blue-500" /> ID Telegram Owner (Opsional)
                     </label>
                     <input
                       type="text"
                       placeholder="Masukkan ID Telegram Anda (misal: 123456789)..."
                       value={telegramOwnerId}
                       onChange={(e) => setTelegramOwnerId(e.target.value)}
-                      className={`w-full rounded-xl px-3.5 py-2.5 text-xs transition ${inputClass}`}
+                      className={`w-full rounded-2xl px-3.5 py-2.5 text-xs transition ${inputClass}`}
                     />
                     <span className="text-[10px] text-slate-500 italic leading-snug">
                       Gunakan bot seperti @userinfobot di Telegram untuk mengetahui ID Anda. ID ini akan dibaca sebagai owner bot untuk melakukan broadcast siaran.
@@ -1474,7 +1475,7 @@ export default function Home() {
                     <button
                       onClick={saveBotSettings}
                       disabled={isBotSaving}
-                      className="flex-1 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white font-bold py-2.5 px-4 rounded-2xl text-xs transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                       <Check className="w-3.5 h-3.5" /> Simpan Config
                     </button>
@@ -1482,7 +1483,7 @@ export default function Home() {
                       <button
                         onClick={() => checkBotStatus(botToken)}
                         disabled={isBotChecking}
-                        className={`py-2 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1.5 cursor-pointer ${
+                        className={`py-2 px-3 rounded-2xl text-xs transition flex items-center justify-center gap-1.5 cursor-pointer ${
                           isDark 
                             ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700/50' 
                             : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-350'
@@ -1498,17 +1499,17 @@ export default function Home() {
                     <motion.div 
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`p-4 rounded-xl flex flex-col gap-3 ${innerCardClass}`}
+                      className={`p-4 rounded-2xl flex flex-col gap-3 ${innerCardClass}`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-extrabold text-sm shadow">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white font-extrabold text-sm shadow">
                           {botInfo.first_name ? botInfo.first_name[0] : 'B'}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className={`font-bold text-xs truncate ${isDark ? 'text-slate-100' : 'text-slate-850'}`}>{botInfo.first_name}</div>
-                          <div className="text-[10px] text-emerald-500 truncate font-mono">@{botInfo.username}</div>
+                          <div className={`font-bold text-xs truncate ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>{botInfo.first_name}</div>
+                          <div className="text-[10px] text-blue-500 truncate font-mono">@{botInfo.username}</div>
                         </div>
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] border border-emerald-500/20 font-bold">
+                        <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-[10px] border border-blue-500/20 font-bold">
                           Online
                         </span>
                       </div>
@@ -1518,8 +1519,8 @@ export default function Home() {
                         <div className="flex justify-between items-center text-[10px]">
                           <span className={`${labelClass} font-medium`}>Webhook Telegram API</span>
                           {webhookInfo?.url ? (
-                            <span className="text-emerald-500 font-bold flex items-center gap-1">
-                              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span>
+                            <span className="text-blue-500 font-bold flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-ping"></span>
                               Terhubung
                             </span>
                           ) : (
@@ -1528,7 +1529,7 @@ export default function Home() {
                         </div>
 
                         {webhookInfo?.url && (
-                          <div className={`flex flex-col gap-1.5 p-2 rounded-lg ${cardClass}`}>
+                          <div className={`flex flex-col gap-1.5 p-2 rounded-xl ${cardClass}`}>
                             <span className="text-[9px] text-slate-400 font-mono">WEBHOOK ENDPOINT:</span>
                             <div className="flex items-center justify-between gap-2">
                               <span className="text-[10px] truncate font-mono select-all text-slate-500">
@@ -1536,10 +1537,10 @@ export default function Home() {
                               </span>
                               <button 
                                 onClick={copyWebhookUrl}
-                                className={`p-1 rounded transition ${isDark ? 'hover:bg-slate-800 text-slate-400 hover:text-white' : 'hover:bg-slate-100 text-slate-500 hover:text-slate-850'}`}
+                                className={`p-1 rounded transition ${isDark ? 'hover:bg-slate-800 text-slate-400 hover:text-white' : 'hover:bg-slate-100 text-slate-500 hover:text-slate-800'}`}
                                 title="Salin Webhook URL"
                               >
-                                {copiedUrl ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                                {copiedUrl ? <Check className="w-3 h-3 text-blue-500" /> : <Copy className="w-3 h-3" />}
                               </button>
                             </div>
                           </div>
@@ -1550,7 +1551,7 @@ export default function Home() {
                             <button
                               onClick={activateWebhook}
                               disabled={isBotChecking}
-                              className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold py-1.5 px-3 rounded-lg text-[11px] transition shadow flex items-center justify-center gap-1 cursor-pointer"
+                              className="flex-1 bg-gradient-to-r from-blue-500 to-violet-600 hover:from-blue-600 hover:to-violet-700 text-white font-bold py-1.5 px-3 rounded-xl text-[11px] transition shadow flex items-center justify-center gap-1 cursor-pointer"
                             >
                               <Globe className="w-3.5 h-3.5" /> Sambungkan Bot Webhook
                             </button>
@@ -1558,7 +1559,7 @@ export default function Home() {
                             <button
                               onClick={deleteWebhook}
                               disabled={isBotChecking}
-                              className="flex-1 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 font-bold py-1.5 px-3 rounded-lg text-[11px] transition flex items-center justify-center gap-1 cursor-pointer"
+                              className="flex-1 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 font-bold py-1.5 px-3 rounded-xl text-[11px] transition flex items-center justify-center gap-1 cursor-pointer"
                             >
                               <XCircle className="w-3.5 h-3.5" /> Putus Hubungan Webhook
                             </button>
@@ -1573,13 +1574,13 @@ export default function Home() {
                 {botToken.trim() && (
                   <section id="broadcast_card" className={`${cardClass} p-5 flex flex-col gap-4 shadow-xl transition-all duration-300`}>
                     <div className={`flex items-center gap-2.5 pb-2 border-b ${borderClass}`}>
-                      <Volume2 className="w-5 h-5 text-emerald-500" />
+                      <Volume2 className="w-5 h-5 text-blue-500" />
                       <h2 className="font-bold">Broadcast Pengumuman</h2>
                     </div>
 
-                    <div className={`p-3 rounded-xl text-[11px] leading-relaxed ${innerCardClass}`}>
-                      <span className="font-bold text-emerald-500">Kirim Pesan ke Semua Pengguna:</span>
-                      <p className={isDark ? 'text-slate-450' : 'text-slate-600'}>
+                    <div className={`p-3 rounded-2xl text-[11px] leading-relaxed ${innerCardClass}`}>
+                      <span className="font-bold text-blue-500">Kirim Pesan ke Semua Pengguna:</span>
+                      <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>
                         Kirim pesan pengumuman/siaran secara massal ke seluruh pengguna yang pernah berinteraksi dengan bot Telegram Anda.
                       </p>
                     </div>
@@ -1593,14 +1594,14 @@ export default function Home() {
                         value={broadcastMessage}
                         onChange={(e) => setBroadcastMessage(e.target.value)}
                         rows={3}
-                        className={`w-full rounded-xl px-3.5 py-2.5 text-xs transition resize-none ${inputClass}`}
+                        className={`w-full rounded-2xl px-3.5 py-2.5 text-xs transition resize-none ${inputClass}`}
                       />
                     </div>
 
                     <button
                       onClick={handleBroadcast}
                       disabled={isBroadcasting || !broadcastMessage.trim()}
-                      className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-bold py-2 px-4 rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="w-full bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white font-bold py-2 px-4 rounded-2xl text-xs transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                       {isBroadcasting ? (
                         <>
@@ -1620,25 +1621,25 @@ export default function Home() {
                 {/* REAL-TIME CLIENT STATISTICS */}
                 <section id="stats_card" className={`${cardClass} p-5 flex flex-col gap-3.5 shadow-xl transition-all duration-300`}>
                   <div className={`flex items-center gap-2.5 pb-2 border-b ${borderClass}`}>
-                    <HardDrive className="w-5 h-5 text-emerald-500" />
+                    <HardDrive className="w-5 h-5 text-blue-500" />
                     <h2 className="font-bold">Statistik Klien</h2>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className={`p-3 rounded-xl flex flex-col gap-1 ${innerCardClass}`}>
+                    <div className={`p-3 rounded-2xl flex flex-col gap-1 ${innerCardClass}`}>
                       <span className="text-[10px] text-slate-500 font-bold uppercase">Unduhan Berhasil</span>
-                      <span className="text-xl font-black text-emerald-500">{currentUser.downloadsCount || 0}</span>
+                      <span className="text-xl font-black text-blue-500">{currentUser.downloadsCount || 0}</span>
                     </div>
-                    <div className={`p-3 rounded-xl flex flex-col gap-1 ${innerCardClass}`}>
+                    <div className={`p-3 rounded-2xl flex flex-col gap-1 ${innerCardClass}`}>
                       <span className="text-[10px] text-slate-500 font-bold uppercase">Status Integrasi</span>
-                      <span className="text-xs font-extrabold text-emerald-500 flex items-center gap-1 mt-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                      <span className="text-xs font-extrabold text-blue-500 flex items-center gap-1 mt-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
                         Aktif
                       </span>
                     </div>
                   </div>
-                  <div className={`p-3 rounded-xl text-[11px] flex items-start gap-2.5 leading-relaxed ${innerCardClass}`}>
-                    <HelpCircle className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
-                    <span className={isDark ? 'text-slate-450' : 'text-slate-600'}>Kirim link Instagram Reels atau TikTok ke bot Telegram Anda. Menu format kirim inline akan otomatis muncul di aplikasi chat Anda!</span>
+                  <div className={`p-3 rounded-2xl text-[11px] flex items-start gap-2.5 leading-relaxed ${innerCardClass}`}>
+                    <HelpCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                    <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>Kirim link Instagram Reels atau TikTok ke bot Telegram Anda. Menu format kirim inline akan otomatis muncul di aplikasi chat Anda!</span>
                   </div>
                 </section>
 
@@ -1646,14 +1647,14 @@ export default function Home() {
                 <section id="chatbot_card" className={`${cardClass} p-5 flex flex-col gap-4 shadow-xl transition-all duration-300`}>
                   <div className={`flex items-center justify-between pb-2 border-b ${borderClass}`}>
                     <div className="flex items-center gap-2.5">
-                      <MessageSquare className="w-5 h-5 text-emerald-500" />
+                      <MessageSquare className="w-5 h-5 text-blue-500" />
                       <h2 className="font-bold">Chatbot & Balasan Otomatis</h2>
                     </div>
                     {/* Switch/Toggle to Enable/Disable Chatbot */}
                     <button 
                       onClick={() => setChatbotEnabled(!chatbotEnabled)}
                       className={`relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                        chatbotEnabled ? 'bg-emerald-500' : 'bg-slate-700'
+                        chatbotEnabled ? 'bg-blue-500' : 'bg-slate-700'
                       }`}
                     >
                       <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
@@ -1662,9 +1663,9 @@ export default function Home() {
                     </button>
                   </div>
 
-                  <div className={`p-3 rounded-xl text-[11px] leading-relaxed ${innerCardClass}`}>
-                    <span className="font-bold text-emerald-500">Kustomisasi Chatbot:</span>
-                    <p className={isDark ? 'text-slate-450' : 'text-slate-600'}>
+                  <div className={`p-3 rounded-2xl text-[11px] leading-relaxed ${innerCardClass}`}>
+                    <span className="font-bold text-blue-500">Kustomisasi Chatbot:</span>
+                    <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>
                       Tentukan bagaimana bot merespon pesan selain tautan media sosial. Menggunakan AI Gemini atau balasan kata kunci instan.
                     </p>
                   </div>
@@ -1684,11 +1685,11 @@ export default function Home() {
                               key={t.id}
                               type="button"
                               onClick={() => setChatbotType(t.id as any)}
-                              className={`py-1.5 px-1 rounded-lg text-[10px] font-bold border transition cursor-pointer ${
+                              className={`py-1.5 px-1 rounded-xl text-[10px] font-bold border transition cursor-pointer ${
                                 chatbotType === t.id 
-                                  ? 'bg-emerald-500/10 border-emerald-500 text-emerald-500' 
+                                  ? 'bg-blue-500/10 border-blue-500 text-blue-500' 
                                   : isDark
-                                    ? 'bg-slate-800/40 border-slate-750 text-slate-400 hover:text-slate-300'
+                                    ? 'bg-slate-800/40 border-slate-700 text-slate-400 hover:text-slate-300'
                                     : 'bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-800'
                               }`}
                             >
@@ -1702,14 +1703,14 @@ export default function Home() {
                       {(chatbotType === 'ai' || chatbotType === 'hybrid') && (
                         <div className="flex flex-col gap-1.5">
                           <label className={`text-xs font-semibold flex items-center gap-1 ${labelClass}`}>
-                            <Sparkles className="w-3.5 h-3.5 text-emerald-500" /> Instruksi Sistem AI (Persona)
+                            <Sparkles className="w-3.5 h-3.5 text-blue-500" /> Instruksi Sistem AI (Persona)
                           </label>
                           <textarea
                             placeholder="Contoh: Jawab dengan gaya asisten gaul Jakarta yang ramah..."
                             value={chatbotPrompt}
                             onChange={(e) => setChatbotPrompt(e.target.value)}
                             rows={3}
-                            className={`w-full rounded-xl px-3 py-2 text-xs transition resize-none ${inputClass}`}
+                            className={`w-full rounded-2xl px-3 py-2 text-xs transition resize-none ${inputClass}`}
                           />
                         </div>
                       )}
@@ -1725,10 +1726,10 @@ export default function Home() {
                               {customAutoReplies.map((rule) => (
                                 <div 
                                   key={rule.keyword} 
-                                  className={`flex items-center justify-between p-2 rounded-lg text-[11px] gap-2 ${innerCardClass}`}
+                                  className={`flex items-center justify-between p-2 rounded-xl text-[11px] gap-2 ${innerCardClass}`}
                                 >
                                   <div className="min-w-0 flex-1">
-                                    <span className="font-extrabold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded mr-1.5 font-mono">
+                                    <span className="font-extrabold text-blue-500 bg-blue-500/10 px-1.5 py-0.5 rounded mr-1.5 font-mono">
                                       {rule.keyword}
                                     </span>
                                     <span className={`truncate block mt-1 ${isDark ? 'text-slate-350' : 'text-slate-700'}`}>
@@ -1747,33 +1748,33 @@ export default function Home() {
                               ))}
                             </div>
                           ) : (
-                            <div className={`p-3 rounded-lg text-[10.5px] text-center text-slate-500 ${innerCardClass}`}>
+                            <div className={`p-3 rounded-xl text-[10.5px] text-center text-slate-500 ${innerCardClass}`}>
                               Belum ada aturan kata kunci. Tambahkan di bawah!
                             </div>
                           )}
 
                           {/* Add keyword rule input row */}
-                          <div className="flex flex-col gap-1.5 bg-slate-500/5 p-2 rounded-xl">
+                          <div className="flex flex-col gap-1.5 bg-slate-500/5 p-2 rounded-2xl">
                             <div className="grid grid-cols-2 gap-1.5">
                               <input
                                 type="text"
                                 placeholder="Kata Kunci (cth: /info)"
                                 value={newKeyword}
                                 onChange={(e) => setNewKeyword(e.target.value)}
-                                className={`rounded-lg px-2 py-1.5 text-[10px] ${inputClass}`}
+                                className={`rounded-xl px-2 py-1.5 text-[10px] ${inputClass}`}
                               />
                               <input
                                 type="text"
                                 placeholder="Balasan pesan..."
                                 value={newReply}
                                 onChange={(e) => setNewReply(e.target.value)}
-                                className={`rounded-lg px-2 py-1.5 text-[10px] ${inputClass}`}
+                                className={`rounded-xl px-2 py-1.5 text-[10px] ${inputClass}`}
                               />
                             </div>
                             <button
                               onClick={handleAddAutoReply}
                               type="button"
-                              className="w-full py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[10.5px] font-bold transition flex items-center justify-center gap-1 cursor-pointer"
+                              className="w-full py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-[10.5px] font-bold transition flex items-center justify-center gap-1 cursor-pointer"
                             >
                               <Plus className="w-3 h-3" /> Tambah Aturan
                             </button>
@@ -1788,14 +1789,14 @@ export default function Home() {
                     <button
                       onClick={saveChatbotSettings}
                       disabled={isChatbotSaving}
-                      className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-bold py-2 px-4 rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="w-full bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white font-bold py-2 px-4 rounded-2xl text-xs transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                       {isChatbotSaving ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                       Simpan Fitur Chatbot
                     </button>
                     {chatbotStatusMsg && (
                       <span className={`text-[10px] font-bold text-center ${
-                        chatbotStatusMsg.type === 'success' ? 'text-emerald-500' : 'text-red-500'
+                        chatbotStatusMsg.type === 'success' ? 'text-green-500' : 'text-red-500'
                       }`}>
                         {chatbotStatusMsg.text}
                       </span>
@@ -1815,19 +1816,19 @@ export default function Home() {
                 
                 {/* Telegram Header Mockup */}
                 <div className={`px-4 py-3.5 flex items-center justify-between border-b ${
-                  isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-205'
+                  isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-200'
                 }`}>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-md relative">
-                      <DifaBotLogo className="w-8 h-8" />
-                      <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 border-2 border-emerald-500 rounded-full"></span>
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-violet-600 flex items-center justify-center text-white shadow-md relative">
+                      <ChonixBotLogo className="w-8 h-8" />
+                      <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-blue-400 border-2 border-blue-500 rounded-full"></span>
                     </div>
                     <div>
                       <h3 className="font-extrabold text-sm flex items-center gap-1.5">
-                        DifaBot Simulator
-                        <span className="bg-emerald-500/10 text-emerald-500 text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">AI</span>
+                        Chonix Bot Simulator
+                        <span className="bg-blue-500/10 text-blue-500 text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">AI</span>
                       </h3>
-                      <p className="text-[10.5px] text-emerald-500 font-semibold">
+                      <p className="text-[10.5px] text-blue-500 font-semibold">
                         {isBotTyping ? 'mengetik...' : 'aktif, siap melayani'}
                       </p>
                     </div>
@@ -1844,7 +1845,7 @@ export default function Home() {
                       ]);
                       addLog('info', 'Simulator chat direset.');
                     }}
-                    className={`p-1.5 rounded-lg transition ${isDark ? 'hover:bg-slate-800 text-slate-400 hover:text-white' : 'hover:bg-slate-200 text-slate-500 hover:text-slate-850'}`}
+                    className={`p-1.5 rounded-xl transition ${isDark ? 'hover:bg-slate-800 text-slate-400 hover:text-white' : 'hover:bg-slate-200 text-slate-500 hover:text-slate-800'}`}
                     title="Reset Obrolan"
                   >
                     <RefreshCw className="w-4 h-4" />
@@ -1865,10 +1866,10 @@ export default function Home() {
                       >
                         <div className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-md flex flex-col gap-1.5 text-xs leading-relaxed ${
                           msg.sender === 'user' 
-                            ? 'bg-emerald-500 text-white rounded-tr-none' 
+                            ? 'bg-blue-500 text-white rounded-tr-none' 
                             : isDark
                               ? 'bg-slate-900 border border-slate-800 text-slate-100 rounded-tl-none'
-                              : 'bg-white border border-slate-150 text-slate-850 rounded-tl-none shadow-sm'
+                              : 'bg-white border border-slate-100 text-slate-800 rounded-tl-none shadow-sm'
                         }`}>
                           
                           {/* Text with markdown bold parsed */}
@@ -1889,25 +1890,25 @@ export default function Home() {
                           {/* OPTION INTERACTIVE BUTTON PANEL */}
                           {msg.isOptionsPanel && msg.urlHash && (
                             <div className={`mt-2 pt-2 border-t flex flex-col gap-2 ${borderClass}`}>
-                              <span className="text-[10px] text-emerald-500 font-bold mb-1">PILIH FORMAT PENGIRIMAN:</span>
+                              <span className="text-[10px] text-blue-500 font-bold mb-1">PILIH FORMAT PENGIRIMAN:</span>
                               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                 <button
                                   onClick={() => handleSimulatorFormatChoice('media', msg.urlHash!, msg.id)}
-                                  className="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold py-1.5 px-2.5 rounded-lg text-[10px] transition flex items-center justify-center gap-1 cursor-pointer"
+                                  className="bg-blue-500 hover:bg-blue-600 text-white font-extrabold py-1.5 px-2.5 rounded-xl text-[10px] transition flex items-center justify-center gap-1 cursor-pointer"
                                 >
                                   📹 Media
                                 </button>
                                 <button
                                   onClick={() => handleSimulatorFormatChoice('file', msg.urlHash!, msg.id)}
-                                  className={`font-extrabold py-1.5 px-2.5 rounded-lg text-[10px] transition flex items-center justify-center gap-1 cursor-pointer ${
-                                    isDark ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-750' : 'bg-slate-200 hover:bg-slate-300 text-slate-800 border border-slate-250'
+                                  className={`font-extrabold py-1.5 px-2.5 rounded-xl text-[10px] transition flex items-center justify-center gap-1 cursor-pointer ${
+                                    isDark ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700' : 'bg-slate-200 hover:bg-slate-300 text-slate-800 border border-slate-200'
                                   }`}
                                 >
                                   📁 Dokumen
                                 </button>
                                 <button
                                   onClick={() => handleSimulatorFormatChoice('audio', msg.urlHash!, msg.id)}
-                                  className="bg-sky-500 hover:bg-sky-600 text-white font-extrabold py-1.5 px-2.5 rounded-lg text-[10px] transition flex items-center justify-center gap-1 cursor-pointer"
+                                  className="bg-indigo-500 hover:bg-indigo-600 text-white font-extrabold py-1.5 px-2.5 rounded-xl text-[10px] transition flex items-center justify-center gap-1 cursor-pointer"
                                 >
                                   🎵 Audio
                                 </button>
@@ -1926,9 +1927,9 @@ export default function Home() {
                                 return (
                                   <div className="flex flex-col gap-2">
                                     <span className="text-[10px] text-slate-500 font-semibold flex items-center gap-1">
-                                      <ImageIcon className="w-3 h-3 text-emerald-500" /> Galeri Foto TikTok ({images.length} gambar)
+                                      <ImageIcon className="w-3 h-3 text-blue-500" /> Galeri Foto TikTok ({images.length} gambar)
                                     </span>
-                                    <div className={`grid grid-cols-3 gap-1.5 p-2 rounded-xl border ${
+                                    <div className={`grid grid-cols-3 gap-1.5 p-2 rounded-2xl border ${
                                       isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-100 border-slate-200'
                                     }`}>
                                       {images.slice(0, 6).map((imgUrl: string, idx: number) => (
@@ -1937,7 +1938,7 @@ export default function Home() {
                                           href={imgUrl} 
                                           target="_blank" 
                                           rel="noopener noreferrer" 
-                                          className={`relative aspect-square rounded-lg overflow-hidden border hover:opacity-80 transition ${
+                                          className={`relative aspect-square rounded-xl overflow-hidden border hover:opacity-80 transition ${
                                             isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
                                           }`}
                                         >
@@ -1958,9 +1959,9 @@ export default function Home() {
                               {msg.media.videoUrl && (
                                 <div className="flex flex-col gap-2">
                                   <span className="text-[10px] text-slate-500 font-semibold flex items-center gap-1">
-                                    <Video className="w-3 h-3 text-emerald-500" /> Pemutar Video
+                                    <Video className="w-3 h-3 text-blue-500" /> Pemutar Video
                                   </span>
-                                  <div className={`relative rounded-xl overflow-hidden border aspect-video bg-black shadow-lg ${
+                                  <div className={`relative rounded-2xl overflow-hidden border aspect-video bg-black shadow-lg ${
                                     isDark ? 'border-slate-800' : 'border-slate-200'
                                   }`}>
                                     <video 
@@ -1981,7 +1982,7 @@ export default function Home() {
                                     href={msg.media.videoUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-1.5 px-3 rounded-lg text-[10px] text-center transition flex items-center justify-center gap-1 shadow"
+                                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-1.5 px-3 rounded-xl text-[10px] text-center transition flex items-center justify-center gap-1 shadow"
                                   >
                                     <Download className="w-3.5 h-3.5" /> Ambil Berkas
                                   </a>
@@ -1991,7 +1992,7 @@ export default function Home() {
                                     href={msg.media.audioUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`font-bold py-1.5 px-3 rounded-lg text-[10px] text-center transition flex items-center justify-center gap-1 ${
+                                    className={`font-bold py-1.5 px-3 rounded-xl text-[10px] text-center transition flex items-center justify-center gap-1 ${
                                       isDark 
                                         ? 'bg-slate-800 hover:bg-slate-705 text-slate-300 border border-slate-700/50' 
                                         : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'
@@ -2004,7 +2005,7 @@ export default function Home() {
                             </div>
                           )}
 
-                          <span className={`text-[9px] self-end mt-1 ${msg.sender === 'user' ? 'text-emerald-100' : 'text-slate-500'}`}>
+                          <span className={`text-[9px] self-end mt-1 ${msg.sender === 'user' ? 'text-blue-100' : 'text-slate-500'}`}>
                             {msg.timestamp}
                           </span>
                         </div>
@@ -2018,11 +2019,11 @@ export default function Home() {
                         className="flex justify-start"
                       >
                         <div className={`rounded-2xl rounded-tl-none px-4 py-3 shadow-sm flex items-center gap-1.5 ${
-                          isDark ? 'bg-slate-900 border border-slate-800 text-slate-300' : 'bg-white border border-slate-150 text-slate-700'
+                          isDark ? 'bg-slate-900 border border-slate-800 text-slate-300' : 'bg-white border border-slate-100 text-slate-700'
                         }`}>
-                          <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce"></span>
-                          <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce delay-100"></span>
-                          <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce delay-200"></span>
+                          <span className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></span>
+                          <span className="w-2 h-2 bg-blue-500 rounded-full animate-bounce delay-100"></span>
+                          <span className="w-2 h-2 bg-blue-500 rounded-full animate-bounce delay-200"></span>
                         </div>
                       </motion.div>
                     )}
@@ -2032,19 +2033,19 @@ export default function Home() {
 
                 {/* Chat Form Footer */}
                 <form onSubmit={sendSimMessage} className={`p-3 flex gap-2 border-t ${
-                  isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-205'
+                  isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-200'
                 }`}>
                   <input
                     type="text"
                     placeholder="Masukkan link TikTok / Instagram, atau ketik pesan..."
                     value={simInput}
                     onChange={(e) => setSimInput(e.target.value)}
-                    className={`flex-1 rounded-xl px-4 py-2.5 text-xs transition ${inputClass}`}
+                    className={`flex-1 rounded-2xl px-4 py-2.5 text-xs transition ${inputClass}`}
                   />
                   <button
                     type="submit"
                     disabled={!simInput.trim() || isBotTyping}
-                    className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white rounded-xl px-4 py-2.5 flex items-center justify-center transition shadow-md flex-shrink-0 cursor-pointer"
+                    className="bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white rounded-2xl px-4 py-2.5 flex items-center justify-center transition shadow-md flex-shrink-0 cursor-pointer"
                   >
                     <Send className="w-4 h-4" />
                   </button>
@@ -2062,7 +2063,7 @@ export default function Home() {
               {/* INSTANT WEB DOWNLOADER CARD */}
               <section id="instant_downloader_card" className={`${cardClass} p-5 flex flex-col gap-4 shadow-xl transition-all duration-300`}>
                 <div className={`flex items-center gap-2.5 pb-2 border-b ${borderClass}`}>
-                  <Download className="w-5 h-5 text-emerald-500" />
+                  <Download className="w-5 h-5 text-blue-500" />
                   <h2 className="font-bold">Ekstraktor Web</h2>
                 </div>
                 
@@ -2076,14 +2077,14 @@ export default function Home() {
                     placeholder="Tempel link video di sini..."
                     value={downloadInput}
                     onChange={(e) => setDownloadInput(e.target.value)}
-                    className={`w-full rounded-xl px-3.5 py-2.5 text-xs transition ${inputClass}`}
+                    className={`w-full rounded-2xl px-3.5 py-2.5 text-xs transition ${inputClass}`}
                     required
                   />
 
                   <button
                     type="submit"
                     disabled={downloadLoading}
-                    className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-60 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                    className="bg-blue-500 hover:bg-blue-600 disabled:opacity-60 text-white font-bold py-2.5 px-4 rounded-2xl text-xs transition shadow-lg flex items-center justify-center gap-2 cursor-pointer"
                   >
                     {downloadLoading ? (
                       <>
@@ -2099,7 +2100,7 @@ export default function Home() {
 
                 {/* Downloader Error */}
                 {downloadError && (
-                  <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-xl text-red-500 text-xs flex gap-2">
+                  <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-2xl text-red-500 text-xs flex gap-2">
                     <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                     <span>{downloadError}</span>
                   </div>
@@ -2110,7 +2111,7 @@ export default function Home() {
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className={`rounded-xl border p-3.5 flex flex-col gap-3 ${innerCardClass}`}
+                    className={`rounded-2xl border p-3.5 flex flex-col gap-3 ${innerCardClass}`}
                   >
                     <div className="flex items-center gap-2">
                       <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold uppercase ${getMediaSourceColor(downloadResult.source)}`}>
@@ -2120,15 +2121,15 @@ export default function Home() {
                     </div>
 
                     {downloadResult.thumbnail && (
-                      <div className={`relative aspect-video rounded-lg overflow-hidden border ${
-                        isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-205'
+                      <div className={`relative aspect-video rounded-xl overflow-hidden border ${
+                        isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-200'
                       }`}>
                         <img src={downloadResult.thumbnail} alt="cover" className="object-cover w-full h-full" />
                       </div>
                     )}
 
                     <div className="flex flex-col gap-1">
-                      <h4 className={`text-xs font-bold line-clamp-2 leading-snug ${isDark ? 'text-slate-100' : 'text-slate-850'}`}>{downloadResult.title}</h4>
+                      <h4 className={`text-xs font-bold line-clamp-2 leading-snug ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>{downloadResult.title}</h4>
                       <p className="text-[10px] text-slate-500 font-medium">Pembuat: <span className={`font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{downloadResult.author}</span></p>
                     </div>
 
@@ -2161,7 +2162,7 @@ export default function Home() {
                           href={downloadResult.videoUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold py-2 px-3 rounded-lg text-xs text-center transition flex items-center justify-center gap-1.5 shadow"
+                          className="bg-blue-500 hover:bg-blue-600 text-white font-extrabold py-2 px-3 rounded-xl text-xs text-center transition flex items-center justify-center gap-1.5 shadow"
                         >
                           <Download className="w-4 h-4" /> Unduh Media Video HD
                         </a>
@@ -2172,9 +2173,9 @@ export default function Home() {
                           href={downloadResult.videoUrl || (downloadResult.images && downloadResult.images[0])}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`font-extrabold py-2 px-3 rounded-lg text-xs text-center transition flex items-center justify-center gap-1.5 ${
+                          className={`font-extrabold py-2 px-3 rounded-xl text-xs text-center transition flex items-center justify-center gap-1.5 ${
                             isDark 
-                              ? 'bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700' 
+                              ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700' 
                               : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200'
                           }`}
                         >
@@ -2187,7 +2188,7 @@ export default function Home() {
                           href={downloadResult.audioUrl || downloadResult.videoUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="bg-sky-500 hover:bg-sky-600 text-white font-extrabold py-2 px-3 rounded-lg text-xs text-center transition flex items-center justify-center gap-1.5 shadow"
+                          className="bg-indigo-500 hover:bg-indigo-600 text-white font-extrabold py-2 px-3 rounded-xl text-xs text-center transition flex items-center justify-center gap-1.5 shadow"
                         >
                           <Music className="w-3.5 h-3.5" /> Unduh Format MP3 Audio
                         </a>
@@ -2200,47 +2201,47 @@ export default function Home() {
               {/* PLATFORMS & FUTURE ADDITIONS CARD */}
               <section id="platforms_status_card" className={`${cardClass} p-5 flex flex-col gap-3 shadow-xl transition-all duration-300`}>
                 <div className={`flex items-center gap-2.5 pb-2 border-b ${borderClass}`}>
-                  <Layers className="w-5 h-5 text-emerald-500" />
+                  <Layers className="w-5 h-5 text-blue-500" />
                   <h2 className="font-bold">Layanan Ekstraksi</h2>
                 </div>
                 <p className="text-xs text-slate-500 leading-relaxed">
-                  DifaBot mendukung ekstraksi tanpa watermark untuk seluruh media sosial utama di bawah ini secara instan:
+                  Chonix Bot mendukung ekstraksi tanpa watermark untuk seluruh media sosial utama di bawah ini secara instan:
                 </p>
                 <div className="grid grid-cols-2 gap-2 mt-1">
-                  <div className={`p-2 rounded-xl flex items-center justify-between text-[11px] font-semibold ${innerCardClass}`}>
-                    <span className="flex items-center gap-1.5 text-emerald-500">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <div className={`p-2 rounded-2xl flex items-center justify-between text-[11px] font-semibold ${innerCardClass}`}>
+                    <span className="flex items-center gap-1.5 text-blue-500">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
                       TikTok
                     </span>
-                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-500 font-extrabold">Aktif</span>
+                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-500 font-extrabold">Aktif</span>
                   </div>
-                  <div className={`p-2 rounded-xl flex items-center justify-between text-[11px] font-semibold ${innerCardClass}`}>
+                  <div className={`p-2 rounded-2xl flex items-center justify-between text-[11px] font-semibold ${innerCardClass}`}>
                     <span className="flex items-center gap-1.5 text-pink-500">
                       <span className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse"></span>
                       Instagram
                     </span>
-                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-500 font-extrabold">Aktif</span>
+                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-500 font-extrabold">Aktif</span>
                   </div>
-                  <div className={`p-2 rounded-xl flex items-center justify-between text-[11px] font-semibold ${innerCardClass}`}>
+                  <div className={`p-2 rounded-2xl flex items-center justify-between text-[11px] font-semibold ${innerCardClass}`}>
                     <span className="flex items-center gap-1.5 text-red-500">
                       <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
                       YouTube
                     </span>
-                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-500 font-extrabold">Aktif</span>
+                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-500 font-extrabold">Aktif</span>
                   </div>
-                  <div className={`p-2 rounded-xl flex items-center justify-between text-[11px] font-semibold ${innerCardClass}`}>
-                    <span className="flex items-center gap-1.5 text-sky-400">
-                      <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse"></span>
+                  <div className={`p-2 rounded-2xl flex items-center justify-between text-[11px] font-semibold ${innerCardClass}`}>
+                    <span className="flex items-center gap-1.5 text-indigo-400">
+                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
                       Twitter / X
                     </span>
-                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-500 font-extrabold">Aktif</span>
+                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-500 font-extrabold">Aktif</span>
                   </div>
-                  <div className={`p-2 rounded-xl flex items-center justify-between text-[11px] font-semibold ${innerCardClass} col-span-2`}>
+                  <div className={`p-2 rounded-2xl flex items-center justify-between text-[11px] font-semibold ${innerCardClass} col-span-2`}>
                     <span className="flex items-center gap-1.5 text-indigo-400">
                       <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
                       Facebook Video & Reels
                     </span>
-                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-500 font-extrabold">Aktif</span>
+                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-500 font-extrabold">Aktif</span>
                   </div>
                 </div>
               </section>
@@ -2249,14 +2250,14 @@ export default function Home() {
               <section id="breaking_news_card" className={`${cardClass} p-5 flex flex-col gap-3.5 shadow-xl transition-all duration-300`}>
                 <div className={`flex items-center justify-between pb-2 border-b ${borderClass}`}>
                   <div className="flex items-center gap-2.5">
-                    <Newspaper className="w-5 h-5 text-emerald-500" />
+                    <Newspaper className="w-5 h-5 text-blue-500" />
                     <h2 className="font-bold">Breaking News / Berita Terkini</h2>
                   </div>
                   <button 
                     onClick={fetchNews} 
                     disabled={newsLoading}
                     type="button"
-                    className="p-1.5 rounded-lg transition hover:bg-emerald-500/10 text-emerald-500 cursor-pointer"
+                    className="p-1.5 rounded-xl transition hover:bg-blue-500/10 text-blue-500 cursor-pointer"
                     title="Segarkan Berita"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${newsLoading ? 'animate-spin' : ''}`} />
@@ -2269,7 +2270,7 @@ export default function Home() {
 
                 {newsLoading ? (
                   <div className="flex flex-col items-center justify-center py-6 gap-2">
-                    <RefreshCw className="w-6 h-6 text-emerald-500 animate-spin" />
+                    <RefreshCw className="w-6 h-6 text-blue-500 animate-spin" />
                     <span className="text-[10px] text-slate-500 font-bold animate-pulse">Memuat berita hangat...</span>
                   </div>
                 ) : newsError ? (
@@ -2284,11 +2285,11 @@ export default function Home() {
                         href={item.link !== '#' ? item.link : undefined}
                         target={item.link !== '#' ? "_blank" : undefined}
                         rel="noopener noreferrer"
-                        className={`group p-2 rounded-xl flex gap-2.5 transition hover:scale-[1.01] ${innerCardClass} ${
+                        className={`group p-2 rounded-2xl flex gap-2.5 transition hover:scale-[1.01] ${innerCardClass} ${
                           item.link !== '#' ? 'cursor-pointer' : ''
                         }`}
                       >
-                        <div className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-slate-800">
+                        <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-slate-800">
                           <img 
                             src={item.imageUrl} 
                             alt="news-thumbnail" 
@@ -2299,7 +2300,7 @@ export default function Home() {
                         <div className="min-w-0 flex-1 flex flex-col justify-between">
                           <div>
                             <h4 className={`text-[10.5px] font-bold leading-snug line-clamp-2 transition ${
-                              isDark ? 'group-hover:text-emerald-400 text-slate-100' : 'group-hover:text-emerald-600 text-slate-850'
+                              isDark ? 'group-hover:text-blue-400 text-slate-100' : 'group-hover:text-blue-600 text-slate-800'
                             }`}>
                               {item.title}
                             </h4>
@@ -2319,11 +2320,11 @@ export default function Home() {
               {/* EVENT LOG CONSOLE CARD */}
               <section id="logs_card" className={`${cardClass} p-5 flex flex-col gap-3 shadow-xl transition-all duration-300`}>
                 <div className={`flex items-center gap-2.5 pb-2 border-b ${borderClass}`}>
-                  <FileText className="w-5 h-5 text-emerald-500" />
+                  <FileText className="w-5 h-5 text-blue-500" />
                   <h2 className="font-bold">Log Konsol Aktivitas</h2>
                 </div>
                 
-                <div className={`p-3 rounded-xl h-36 overflow-y-auto flex flex-col gap-2 font-mono text-[9px] leading-relaxed scrollbar-thin ${innerCardClass}`}>
+                <div className={`p-3 rounded-2xl h-36 overflow-y-auto flex flex-col gap-2 font-mono text-[9px] leading-relaxed scrollbar-thin ${innerCardClass}`}>
                   {botStatusLogs.length === 0 ? (
                     <span className="text-slate-500 text-center italic mt-10 block">Belum ada aktivitas terekam.</span>
                   ) : (
@@ -2331,10 +2332,10 @@ export default function Home() {
                       <div key={log.id} className="flex items-start gap-1.5 border-b border-black/5 dark:border-white/5 pb-1.5">
                         <span className="text-slate-500 shrink-0 font-sans">{log.time}</span>
                         <span className={`font-bold shrink-0 ${
-                          log.type === 'success' ? 'text-emerald-500' :
+                          log.type === 'success' ? 'text-green-500' :
                           log.type === 'error' ? 'text-red-500' :
                           log.type === 'warning' ? 'text-yellow-500' :
-                          'text-sky-500'
+                          'text-indigo-500'
                         }`}>
                           [{log.type.toUpperCase()}]
                         </span>
@@ -2354,10 +2355,10 @@ export default function Home() {
         isDark ? 'bg-slate-950 border-slate-900 text-slate-500' : 'bg-slate-100 border-slate-200 text-slate-500'
       }`}>
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-[10.5px]">
-          <span className="font-medium">DifaBot Dashboard © 2026. Semua Hak Dilindungi.</span>
+          <span className="font-medium">Chonix Bot Dashboard © 2026. Semua Hak Dilindungi.</span>
           <div className="flex gap-4">
             <span className="flex items-center gap-1">
-              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> 
+              <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span> 
               JSONBin Database Synchronized
             </span>
             <span>Didukung oleh API Gemini & Cobalt Engine</span>
@@ -2375,9 +2376,9 @@ export default function Home() {
               initial={{ opacity: 0, y: 50, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.85, transition: { duration: 0.2 } }}
-              className={`pointer-events-auto p-3.5 rounded-xl border shadow-xl flex items-start gap-3 transition-colors ${
+              className={`pointer-events-auto p-3.5 rounded-2xl border shadow-xl flex items-start gap-3 transition-colors ${
                 notif.type === 'success' 
-                  ? 'bg-slate-900/95 border-emerald-500/30 text-emerald-400 dark:bg-slate-950/95 shadow-emerald-500/5' 
+                  ? 'bg-slate-900/95 border-blue-500/30 text-blue-400 dark:bg-slate-950/95 shadow-blue-500/5' 
                   : notif.type === 'error'
                     ? 'bg-slate-900/95 border-red-500/30 text-red-400 dark:bg-slate-950/95 shadow-red-500/5'
                     : notif.type === 'warning'
@@ -2385,10 +2386,10 @@ export default function Home() {
                       : 'bg-slate-900/95 border-slate-800 text-slate-200 dark:bg-slate-950/95'
               }`}
             >
-              {notif.type === 'success' && <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-500 mt-0.5" />}
+              {notif.type === 'success' && <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-green-500 mt-0.5" />}
               {notif.type === 'error' && <XCircle className="w-4 h-4 flex-shrink-0 text-red-500 mt-0.5" />}
               {notif.type === 'warning' && <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-500 mt-0.5" />}
-              {notif.type === 'info' && <Sparkles className="w-4 h-4 flex-shrink-0 text-sky-400 mt-0.5" />}
+              {notif.type === 'info' && <Sparkles className="w-4 h-4 flex-shrink-0 text-indigo-400 mt-0.5" />}
               
               <div className="flex-1 text-xs font-semibold leading-relaxed">
                 {notif.message}
